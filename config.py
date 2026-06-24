@@ -15,4 +15,5 @@ class Config:
     PAYHERO_API_USERNAME = os.environ.get('PAYHERO_API_USERNAME')
     PAYHERO_API_PASSWORD = os.environ.get('PAYHERO_API_PASSWORD')
     PAYHERO_CHECKOUT_URL = os.environ.get('PAYHERO_CHECKOUT_URL')
+    PAYHERO_CHANNEL_ID = os.environ.get('PAYHERO_CHANNEL_ID')   # <-- new
     PAYHERO_CALLBACK_URL = os.environ.get('PAYHERO_CALLBACK_URL')
