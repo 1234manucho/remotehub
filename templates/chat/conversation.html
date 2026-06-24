@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Chat – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Back link -->
+    <a href="{{ url_for('chat.list_conversations') }}" class="text-green-600 hover:underline text-sm mb-4 inline-block">
+        &larr; Back to conversations
+    </a>
+
+    <!-- Header -->
+    <div class="glass-card rounded-xl p-4 mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold text-gray-800">
+                {% if conversation.job %}{{ conversation.job.title }}{% else %}Chat{% endif %}
+            </h1>
+            <p class="text-sm text-gray-500">
+                With {{ conversation.admin.full_name if conversation.admin else 'Support' }}
+            </p>
+        </div>
+        {% if not current_user.is_admin %}
+        <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
+            {{ messages|length }} messages
+        </span>
+        {% endif %}
+    </div>
+
+    <!-- Messages -->
+    <div class="space-y-4 mb-6" id="message-container">
+        {% for msg in messages %}
+        <div class="flex {% if msg.sender_id == current_user.id %}justify-end{% else %}justify-start{% endif %}">
+            <div class="max-w-[70%] p-3 rounded-xl 
+                {% if msg.sender_id == current_user.id %}
+                    bg-green-100 text-gray-800
+                {% else %}
+                    bg-white border border-gray-200 text-gray-800
+                {% endif %}">
+                <p class="text-sm whitespace-pre-wrap">{{ msg.content }}</p>
+                {% if msg.attachment %}
+                <div class="mt-2">
+                    <a href="{{ url_for('static', filename=msg.attachment) }}" target="_blank" class="text-green-600 text-xs underline">
+                        📎 Attachment
+                    </a>
+                </div>
+                {% endif %}
+                <span class="text-xs text-gray-400 mt-1 block">
+                    {{ msg.timestamp.strftime('%H:%M') }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Free message limit warning (for non‑admin users) -->
+    {% if messages|length >= 5 and not current_user.is_admin %}
+        {% set sub = get_active_subscription(current_user.id) %}
+        {% if not sub %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4 text-sm text-yellow-800">
+            You have reached the free message limit. 
+            <a href="{{ url_for('chat.subscribe') }}" class="font-semibold underline">Subscribe for $20/month</a> to continue chatting.
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <!-- Send Message Form -->
+    <form method="POST" enctype="multipart/form-data" class="glass-card rounded-xl p-4 flex flex-col sm:flex-row gap-3">
+        <div class="flex-1">
+            <textarea name="message" rows="2" placeholder="Type your message..." 
+                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
+            <div class="flex items-center gap-3 mt-2">
+                <label class="text-xs text-gray-500 cursor-pointer hover:text-green-600">
+                    <input type="file" name="attachment" class="hidden">
+                    📎 Attach file
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-medium self-end">
+            Send
+        </button>
+    </form>
+</div>
+{% endblock %}

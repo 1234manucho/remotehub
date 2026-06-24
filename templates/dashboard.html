@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Dashboard – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Welcome, {{ current_user.username }}</h1>
+            <p class="text-gray-500">Here's your remote job activity overview.</p>
+        </div>
+        <div class="mt-4 md:mt-0 flex space-x-3">
+            <a href="{{ url_for('profile.edit') }}" class="bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+                Edit Profile
+            </a>
+            <a href="{{ url_for('jobs.browse') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition">
+                Find Jobs
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="glass-card rounded-xl p-5">
+            <div class="text-2xl font-bold text-green-700">{{ stats.applications }}</div>
+            <div class="text-sm text-gray-500">Applications</div>
+        </div>
+        <div class="glass-card rounded-xl p-5">
+            <div class="text-2xl font-bold text-green-700">{{ stats.saved_jobs }}</div>
+            <div class="text-sm text-gray-500">Saved Jobs</div>
+        </div>
+        <div class="glass-card rounded-xl p-5">
+            <div class="text-2xl font-bold text-green-700">{{ stats.proxies }}</div>
+            <div class="text-sm text-gray-500">Active Proxies</div>
+        </div>
+        <div class="glass-card rounded-xl p-5">
+            <div class="text-2xl font-bold text-green-700">{{ stats.views }}</div>
+            <div class="text-sm text-gray-500">Recent Views</div>
+        </div>
+    </div>
+
+    <!-- Tabs for Saved Jobs / Applications / Proxies -->
+    <div class="mb-6 border-b border-gray-200">
+        <nav class="flex space-x-8">
+            <button class="tab-btn active pb-3 text-sm font-medium border-b-2 border-green-600 text-green-600" data-tab="saved">Saved Jobs</button>
+            <button class="tab-btn pb-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="applications">Applications</button>
+            <button class="tab-btn pb-3 text-sm font-medium text-gray-500 hover:text-gray-700" data-tab="proxies">My Proxies</button>
+        </nav>
+    </div>
+
+    <!-- Saved Jobs Tab Content -->
+    <div id="tab-saved" class="tab-content">
+        <div class="space-y-4">
+            {% for saved in saved_jobs %}
+            <div class="glass-card rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between">
+                <div class="flex items-center space-x-3 mb-3 sm:mb-0">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-700 font-bold">{{ saved.job.company.name[:2].upper() }}</div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800">{{ saved.job.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ saved.job.company.name }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{{ saved.job.employment_type }}</span>
+                    <a href="{{ url_for('jobs.detail', job_id=saved.job.id) }}" class="text-green-600 text-sm font-medium hover:underline">View</a>
+                    <button class="text-red-400 hover:text-red-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg></button>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-400">No saved jobs yet. <a href="{{ url_for('jobs.browse') }}" class="text-green-600 hover:underline">Browse jobs</a></div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Applications Tab Content (hidden by default) -->
+    <div id="tab-applications" class="tab-content hidden">
+        <div class="space-y-4">
+            {% for app in applications %}
+            <div class="glass-card rounded-xl p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">{{ app.job.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ app.job.company.name }}</p>
+                    </div>
+                    <span class="text-xs px-2 py-1 rounded-full 
+                        {% if app.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                        {% elif app.status == 'Accepted' %}bg-green-100 text-green-800
+                        {% else %}bg-red-100 text-red-800{% endif %}">
+                        {{ app.status }}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Applied on {{ app.applied_at.strftime('%b %d, %Y') }}</p>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-400">No applications yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Proxies Tab Content (hidden by default) -->
+    <div id="tab-proxies" class="tab-content hidden">
+        <div class="space-y-4">
+            {% for proxy in user_proxies %}
+            <div class="glass-card rounded-xl p-5 flex flex-col sm:flex-row justify-between">
+                <div>
+                    <h3 class="font-semibold text-gray-800">{{ proxy.plan.name }}</h3>
+                    <p class="text-sm text-gray-500">{{ proxy.proxy_ip }} – {{ proxy.country }}</p>
+                    <p class="text-xs text-gray-400">Expires: {{ proxy.expires_at.strftime('%b %d, %Y') }}</p>
+                </div>
+                <div class="mt-3 sm:mt-0 flex space-x-2">
+                    <button class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full hover:bg-green-200">Copy</button>
+                    <a href="{{ url_for('proxy.marketplace') }}" class="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full hover:bg-gray-200">Buy More</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-8 text-gray-400">No proxies purchased. <a href="{{ url_for('proxy.marketplace') }}" class="text-green-600 hover:underline">Visit marketplace</a></div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Deactivate all
+                tabs.forEach(t => {
+                    t.classList.remove('active', 'border-b-2', 'border-green-600', 'text-green-600');
+                    t.classList.add('text-gray-500');
+                });
+                contents.forEach(c => c.classList.add('hidden'));
+                // Activate clicked
+                tab.classList.add('active', 'border-b-2', 'border-green-600', 'text-green-600');
+                const target = document.getElementById('tab-' + tab.dataset.tab);
+                if (target) target.classList.remove('hidden');
+            });
+        });
+    })();
+</script>
+{% endblock %}

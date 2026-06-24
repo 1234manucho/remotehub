@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Notifications – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Notifications</h1>
+        {% if unread_count > 0 %}
+        <a href="{{ url_for('notifications.mark_all_read') }}" class="text-sm text-green-600 hover:underline">Mark all as read</a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="space-y-3">
+        {% for n in notifications %}
+        <div class="glass-card rounded-xl p-4 flex items-start gap-3 {% if not n.is_read %}border-l-4 border-green-500{% endif %}">
+            <span class="text-lg mt-1">
+                {% if n.type == 'chat' %}💬
+                {% elif n.type == 'subscription' %}⭐
+                {% elif n.type == 'job_alert' %}📌
+                {% else %}🔔{% endif %}
+            </span>
+            <div class="flex-1">
+                <p class="text-sm text-gray-800 {% if not n.is_read %}font-semibold{% endif %}">{{ n.message }}</p>
+                <span class="text-xs text-gray-400">{{ n.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+            </div>
+            {% if not n.is_read %}
+            <a href="{{ url_for('notifications.mark_read', notif_id=n.id) }}" class="text-xs text-green-600 hover:underline">Read</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center text-gray-400 py-12">No notifications yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

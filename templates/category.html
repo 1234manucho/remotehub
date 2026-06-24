@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ category }} Jobs – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <a href="{{ url_for('main.home') }}" class="text-green-600 hover:underline text-sm mb-4 inline-block">&larr; Back to categories</a>
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">{{ category }} Remote Jobs</h1>
+    
+    {% if jobs %}
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {% for job in jobs %}
+        <div class="glass-card rounded-2xl p-6 hover:shadow-xl transition-all duration-200 hover:-translate-y-1">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-green-700 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
+                    {{ job.company.name[:2].upper() }}
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800">{{ job.title }}</h3>
+                    <p class="text-sm text-gray-500">{{ job.company.name }}</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2 mb-3">
+                <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">{{ job.employment_type }}</span>
+                <span class="px-3 py-1 bg-green-50 text-green-800 text-xs font-medium rounded-full">{{ job.location }}</span>
+                {% if job.salary %}<span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">{{ job.salary }}</span>{% endif %}
+            </div>
+            <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ job.description[:120] }}...</p>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-400">{{ job.posted_date.strftime('%b %d') }}</span>
+                <a href="{{ url_for('jobs.detail', job_id=job.id) }}" class="text-green-600 hover:text-green-800 font-medium text-sm inline-flex items-center">
+                    View Job <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 text-gray-500">
+        <p class="text-xl mb-4">No jobs found in this category yet.</p>
+        <a href="{{ url_for('jobs.browse') }}" class="text-green-600 font-medium hover:underline">Browse all jobs</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+{% block title %}Proxy Marketplace – RemoteHub{% endblock %}
+
+{% block extra_head %}
+<style>
+    .plan-card {
+        transition: all 0.3s ease;
+    }
+    .plan-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 30px -12px rgba(0,0,0,0.15);
+    }
+    .popular-badge {
+        background: linear-gradient(135deg, #2E7D32, #43A047);
+    }
+    .feature-icon {
+        flex-shrink: 0;
+    }
+    
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        max-width: 500px;
+        width: 90%;
+        animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .payment-method-btn {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: white;
+        text-align: left;
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+    
+    .payment-method-btn:hover {
+        border-color: #10b981;
+        background: #f0fdf4;
+    }
+    
+    .payment-method-btn.selected {
+        border-color: #10b981;
+        background: #ecfdf5;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    
+    .payment-icon {
+        font-size: 1.5rem;
+        width: 2.5rem;
+        text-align: center;
+    }
+    
+    .payment-details {
+        flex: 1;
+    }
+    
+    .payment-details h4 {
+        font-weight: 600;
+        margin: 0;
+        color: #1f2937;
+    }
+    
+    .payment-details p {
+        font-size: 0.875rem;
+        color: #6b7280;
+        margin: 0.25rem 0 0 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Back button -->
+    <a href="{{ url_for('main.home') }}" class="text-green-600 hover:underline text-sm mb-4 inline-flex items-center">
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to home
+    </a>
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 mb-3">
+            Proxy Marketplace
+        </h1>
+        <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+            Secure your connection and unlock every remote job on RemoteHub. All plans include a <strong>30‑day</strong> proxy with instant setup.
+        </p>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {% for plan in proxy_plans %}
+        <div class="plan-card glass-card rounded-2xl p-6 flex flex-col relative
+                    {% if plan.popular %} ring-2 ring-green-500 shadow-xl{% endif %}">
+            
+            {% if plan.popular %}
+            <span class="popular-badge text-white text-xs font-bold px-3 py-1 rounded-full absolute -top-3 right-4 shadow-lg">
+                MOST POPULAR
+            </span>
+            {% endif %}
+            
+            <!-- Plan name & description -->
+            <h3 class="text-2xl font-bold text-gray-800">{{ plan.name }}</h3>
+            <p class="text-gray-500 text-sm mt-2">{{ plan.description }}</p>
+            
+            <!-- Price -->
+            <div class="mt-5 mb-6">
+                <span class="text-4xl font-extrabold text-green-600">${{ "%.2f"|format(plan.price) }}</span>
+                <span class="text-lg text-gray-400 font-normal">/{{ plan.duration }}</span>
+            </div>
+            
+            <!-- Features list -->
+            <ul class="space-y-3 text-sm text-gray-600 flex-1 mb-6">
+                {% for feature in plan.features.split(',') %}
+                <li class="flex items-start">
+                    <span class="feature-icon text-green-500 mr-2 mt-0.5">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    </span>
+                    <span>{{ feature.strip() }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <!-- Buy Button -->
+            <button onclick="openPaymentModal({{ plan.id }}, '{{ plan.name }}', {{ plan.price }})" 
+               class="w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-md hover:shadow-lg">
+                Buy Now
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Trust note -->
+    <p class="text-center text-xs text-gray-400 mt-10">
+        All proxy purchases are secure and covered by our 30‑day satisfaction guarantee. Need help? <a href="#" class="text-green-600 hover:underline">Contact support</a>.
+    </p>
+</div>
+
+<!-- Payment Method Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Choose Payment Method</h2>
+        <p id="planInfo" class="text-sm text-gray-600 mb-6"></p>
+        
+        <!-- Payment Method Selection -->
+        <div id="paymentMethods" class="mb-6">
+            <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('mpesa', this)">
+                <div class="payment-icon">💳</div>
+                <div class="payment-details">
+                    <h4>M-PESA</h4>
+                    <p>Instant payment via M-PESA</p>
+                </div>
+            </button>
+            
+            <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('bank', this)">
+                <div class="payment-icon">🏦</div>
+                <div class="payment-details">
+                    <h4>Bank Transfer</h4>
+                    <p>Direct bank deposit (2-24 hours)</p>
+                </div>
+            </button>
+            
+            <button type="button" class="payment-method-btn" onclick="selectPaymentMethod('card', this)">
+                <div class="payment-icon">💰</div>
+                <div class="payment-details">
+                    <h4>Card Payment</h4>
+                    <p>Credit/Debit card (Visa, Mastercard)</p>
+                </div>
+            </button>
+        </div>
+        
+        <!-- M-PESA Phone Number Form (hidden by default) -->
+        <div id="mpesaForm" style="display: none;" class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+                Enter M-PESA Phone Number
+            </label>
+            <input type="tel" id="phoneNumber" placeholder="0712345678" 
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                   pattern="[0-9]{10}">
+            <p class="text-xs text-gray-500 mt-2">Format: 0712345678 (10 digits)</p>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button onclick="closePaymentModal()" 
+                    class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium">
+                Cancel
+            </button>
+            <button id="proceedBtn" onclick="proceedWithPayment()" 
+                    class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled>
+                Proceed
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedMethod = null;
+let selectedPlanId = null;
+let selectedPlanName = null;
+let selectedPlanPrice = null;
+
+function openPaymentModal(planId, planName, planPrice) {
+    selectedPlanId = planId;
+    selectedPlanName = planName;
+    selectedPlanPrice = planPrice;
+    selectedMethod = null;
+    
+    document.getElementById('planInfo').textContent = `${planName} - $${planPrice.toFixed(2)}`;
+    document.getElementById('paymentModal').classList.add('show');
+    document.getElementById('mpesaForm').style.display = 'none';
+    document.getElementById('proceedBtn').disabled = true;
+    
+    // Clear previous selections
+    document.querySelectorAll('.payment-method-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    document.getElementById('phoneNumber').value = '';
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').classList.remove('show');
+}
+
+function selectPaymentMethod(method, button) {
+    selectedMethod = method;
+    
+    // Update visual selection
+    document.querySelectorAll('.payment-method-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    button.classList.add('selected');
+    
+    // Show/hide M-PESA form
+    if (method === 'mpesa') {
+        document.getElementById('mpesaForm').style.display = 'block';
+        document.getElementById('phoneNumber').focus();
+    } else {
+        document.getElementById('mpesaForm').style.display = 'none';
+    }
+    
+    updateProceedButton();
+}
+
+function updateProceedButton() {
+    const proceedBtn = document.getElementById('proceedBtn');
+    
+    if (selectedMethod === 'mpesa') {
+        const phone = document.getElementById('phoneNumber').value.trim();
+        proceedBtn.disabled = !phone || phone.length < 10;
+    } else if (selectedMethod) {
+        proceedBtn.disabled = false;
+    } else {
+        proceedBtn.disabled = true;
+    }
+}
+
+document.getElementById('phoneNumber')?.addEventListener('input', updateProceedButton);
+
+function proceedWithPayment() {
+    if (selectedMethod === 'mpesa') {
+        const phone = document.getElementById('phoneNumber').value.trim();
+        if (!phone || phone.length < 10) {
+            alert('Please enter a valid phone number');
+            return;
+        }
+        
+        // Redirect to purchase with phone number
+        window.location.href = `/proxy/purchase/${selectedPlanId}?phone=${encodeURIComponent(phone)}`;
+    } else if (selectedMethod === 'bank') {
+        alert('Bank transfer method coming soon!');
+    } else if (selectedMethod === 'card') {
+        alert('Card payment method coming soon!');
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('paymentModal')?.addEventListener('click', function(e) {
+    if (e.target === this) {
+        closePaymentModal();
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Proxy Required – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="min-h-[70vh] flex items-center justify-center px-4">
+    <div class="glass-card rounded-2xl p-8 max-w-lg text-center">
+        <div class="text-5xl mb-4">🔒</div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Proxy Required</h2>
+        <p class="text-gray-600 mb-6">
+            You need to purchase a proxy to browse remote jobs on RemoteHub.
+            Our cheapest plan starts at <strong>$45.00</strong>.
+        </p>
+        <a href="{{ url_for('proxy.marketplace') }}" class="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition font-medium shadow-md">
+            Buy a Proxy
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <p class="mt-4 text-sm text-gray-400">Already have a proxy? <a href="{{ url_for('jobs.browse') }}" class="text-green-600 hover:underline">Refresh</a></p>
+    </div>
+</div>
+{% endblock %}

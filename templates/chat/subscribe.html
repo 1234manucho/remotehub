@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Subscribe – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-12 text-center">
+    {% if active_subscription %}
+    <div class="glass-card rounded-2xl p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">You're subscribed!</h2>
+        <p class="text-gray-500 mb-4">Your subscription is active until {{ active_subscription.end_date.strftime('%b %d, %Y') }}.</p>
+        <a href="{{ url_for('chat.list_conversations') }}" class="text-green-600 font-medium hover:underline">Go to conversations</a>
+    </div>
+    {% else %}
+    <div class="glass-card rounded-2xl p-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Chat Subscription</h2>
+        <p class="text-gray-500 mb-6">Unlock unlimited messages after 5 free replies.</p>
+        <div class="text-4xl font-extrabold text-green-600 mb-4">${{ "%.2f"|format(plan.price) }}</div>
+        <p class="text-sm text-gray-400 mb-6">{{ plan.description }}</p>
+        <a href="{{ url_for('chat.checkout_subscription', plan_id=plan.id) }}" 
+           class="inline-block bg-green-600 text-white px-8 py-3 rounded-xl hover:bg-green-700 font-semibold">
+            Subscribe Now
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
