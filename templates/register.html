@@ -11,47 +11,56 @@
     --rh-ink:#001e00;
     --rh-muted:#5e6d55;
     --rh-line:#e4ebe4;
-    --rh-bg:#f7faf7;
     --rh-card:#ffffff;
   }
   *{box-sizing:border-box}
-  body{font-family:'Inter',sans-serif;background:var(--rh-bg);color:var(--rh-ink);margin:0}
+  body{font-family:'Inter',sans-serif;color:var(--rh-ink);margin:0}
 
   .rh-auth-wrap{
     position:relative;min-height:100vh;
     display:flex;align-items:center;justify-content:center;
     padding:40px 20px;overflow:hidden;
     background:
-      radial-gradient(1000px 600px at 90% 10%, rgba(20,168,0,.10), transparent 60%),
-      radial-gradient(800px 500px at 0% 100%, rgba(20,168,0,.08), transparent 60%),
-      linear-gradient(180deg,#f3f8f3,#eaf3ea);
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.15), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(0,60,0,.25), transparent 60%),
+      linear-gradient(135deg, #0a2e0a 0%, #0f3f0f 40%, #1a5c1a 100%);
   }
 
-  /* Rotating globe */
+  /* Rotating globe – dark green tones */
   .rh-globe{
     position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
-    width:820px;height:820px;max-width:110vw;max-height:110vw;opacity:.45;
+    width:820px;height:820px;max-width:110vw;max-height:110vw;opacity:.55;
     background:
-      radial-gradient(circle at 35% 30%, rgba(255,255,255,.85), rgba(255,255,255,0) 45%),
-      radial-gradient(circle at 70% 70%, rgba(20,168,0,.35), rgba(20,168,0,0) 55%),
-      conic-gradient(from 0deg, #d6efd6, #b9e3b9, #a5dca5, #c8e9c8, #d6efd6);
-    box-shadow:inset -40px -60px 120px rgba(0,40,0,.25), 0 30px 80px rgba(0,60,0,.15);
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,.12), rgba(255,255,255,0) 45%),
+      radial-gradient(circle at 50% 50%, #0f3f0f 0%, #0a2e0a 40%, #1a5c1a 75%, #0d360d 100%);
+    box-shadow:
+      inset -40px -40px 100px rgba(0,0,0,.4),
+      inset 30px 30px 80px rgba(20,168,0,.15),
+      0 30px 80px rgba(0,0,0,.3);
+    overflow:hidden;
     animation:rh-spin 60s linear infinite;
   }
-  .rh-globe::before,.rh-globe::after{
+  .rh-globe::before,
+  .rh-globe::after{
     content:"";position:absolute;inset:0;border-radius:50%;
-    background:
-      radial-gradient(ellipse 90px 40px at 25% 30%, rgba(16,138,0,.55), transparent 60%),
-      radial-gradient(ellipse 140px 60px at 60% 45%, rgba(16,138,0,.5), transparent 60%),
-      radial-gradient(ellipse 70px 35px at 75% 70%, rgba(16,138,0,.55), transparent 60%),
-      radial-gradient(ellipse 110px 50px at 35% 75%, rgba(16,138,0,.45), transparent 60%);
-    mix-blend-mode:multiply;
+    background-repeat:repeat;mix-blend-mode:soft-light;opacity:.4;
+  }
+  .rh-globe::before{
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 40px);
+    mask-image:radial-gradient(circle, #000 55%, transparent 75%);
+    -webkit-mask-image:radial-gradient(circle, #000 55%, transparent 75%);
   }
   .rh-globe::after{
     background:
-      repeating-linear-gradient(90deg, rgba(0,40,0,.06) 0 1px, transparent 1px 60px),
-      repeating-linear-gradient(0deg, rgba(0,40,0,.05) 0 1px, transparent 1px 60px);
-    opacity:.6;
+      radial-gradient(40px 24px at 22% 38%, #1f6b12 40%, transparent 60%),
+      radial-gradient(70px 36px at 35% 30%, #1f6b12 40%, transparent 60%),
+      radial-gradient(60px 30px at 48% 55%, #1f6b12 40%, transparent 60%),
+      radial-gradient(90px 50px at 70% 42%, #1f6b12 40%, transparent 60%),
+      radial-gradient(40px 60px at 78% 65%, #1f6b12 40%, transparent 60%),
+      radial-gradient(50px 28px at 30% 70%, #1f6b12 40%, transparent 60%),
+      radial-gradient(30px 20px at 60% 78%, #1f6b12 40%, transparent 60%);
   }
   @keyframes rh-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
@@ -59,7 +68,7 @@
   .rh-card{
     position:relative;z-index:2;width:100%;max-width:480px;
     background:var(--rh-card);border:1px solid var(--rh-line);border-radius:20px;
-    box-shadow:0 30px 80px rgba(0,30,0,.18);overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.25);overflow:hidden;
     padding:48px 44px;
   }
 
