@@ -56,23 +56,25 @@ with app.app_context():
     db.session.commit()
 
     # ======================== PROXY PLANS ========================
+        # ======================== PROXY PLANS ========================
     proxy_plans_data = [
         {'name': 'Basic', 'description': 'Shared IP, US only. Good for light browsing.',
-         'price': 45.0, 'duration': 'month', 'features': 'US IP, 5GB bandwidth, Shared IP',
+         'price': 75.0, 'duration': 'month', 'features': 'US IP, 10GB bandwidth, Shared IP',
          'popular': False, 'is_active': True},
         {'name': 'Residential', 'description': 'Residential IPs from multiple countries.',
-         'price': 75.0, 'duration': 'month', 'features': '10+ countries, 20GB bandwidth, Residential IPs',
+         'price': 100.0, 'duration': 'month', 'features': '10+ countries, 30GB bandwidth, Residential IPs',
          'popular': True, 'is_active': True},
         {'name': 'Rotating', 'description': 'Auto‑rotating IPs every 10 minutes.',
-         'price': 90.0, 'duration': 'month', 'features': 'Global IPs, 50GB bandwidth, Auto‑rotate',
+         'price': 130.0, 'duration': 'month', 'features': 'Global IPs, 60GB bandwidth, Auto‑rotate',
          'popular': False, 'is_active': True},
         {'name': 'Dedicated', 'description': 'Private dedicated IP, full control.',
-         'price': 120.0, 'duration': 'month', 'features': 'Dedicated IP, Unlimited bandwidth, 24/7 support',
+         'price': 160.0, 'duration': 'month', 'features': 'Dedicated IP, Unlimited bandwidth, 24/7 support',
          'popular': False, 'is_active': True},
         {'name': 'Premium', 'description': 'Top‑tier proxy with all features.',
-         'price': 199.0, 'duration': 'month', 'features': 'Dedicated IP, Unlimited bandwidth, Priority support, All countries',
+         'price': 200.0, 'duration': 'month', 'features': 'Dedicated IP, Unlimited bandwidth, Priority support, All countries',
          'popular': False, 'is_active': True},
     ]
+    
     for plan_data in proxy_plans_data:
         plan = ProxyPlan(**plan_data)
         db.session.add(plan)
