@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from models import UserSubscription, db, User, Job, ProxyPlan, Payment, Conversation
-from datetime import datetime, timezone
+from sqlalchemy import func
+from models import db, User, Job, ProxyPlan, Payment, Conversation, UserSubscription, SubscriptionPlan
+from datetime import datetime, timezone, timedelta
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 def admin_required(func):
-    """Decorator to ensure only admins can access these routes."""
     from functools import wraps
     @wraps(func)
     @login_required
@@ -16,8 +16,8 @@ def admin_required(func):
             return redirect(url_for('main.home'))
         return func(*args, **kwargs)
     return wrapper
-from sqlalchemy import func
 
+# ==================== DASHBOARD ====================
 @admin_bp.route('/')
 @admin_required
 def dashboard():
@@ -27,24 +27,23 @@ def dashboard():
     total_payments = Payment.query.filter_by(status='completed').count()
     total_conversations = Conversation.query.count()
 
-    # Total earnings from proxy payments (completed)
+    # Proxy earnings
     proxy_earnings = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
                       .filter(Payment.status == 'completed').scalar()
 
-    # Chat subscription earnings (from UserSubscription active subscriptions)
-    chat_earnings = db.session.query(func.coalesce(func.sum(UserSubscription.plan_price), 0)) \
+    # Chat subscription earnings – join through UserSubscription
+    chat_earnings = db.session.query(func.coalesce(func.sum(SubscriptionPlan.price), 0)) \
+                    .join(UserSubscription, UserSubscription.plan_id == SubscriptionPlan.id) \
                     .filter(UserSubscription.is_active == True).scalar()
 
     total_earnings = proxy_earnings + chat_earnings
 
-    # Recent activity
     recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
     recent_jobs = Job.query.order_by(Job.posted_date.desc()).limit(5).all()
     recent_payments = Payment.query.filter_by(status='completed') \
                       .order_by(Payment.completed_at.desc()).limit(5).all()
 
-    # Data for mini chart (last 7 days of payments)
-    from datetime import timedelta
+    # Chart data – last 7 days
     chart_labels = []
     chart_data = []
     today = datetime.now(timezone.utc).date()
@@ -70,6 +69,7 @@ def dashboard():
                            recent_payments=recent_payments,
                            chart_labels=chart_labels,
                            chart_data=chart_data)
+
 # ==================== MANAGE JOBS ====================
 @admin_bp.route('/jobs')
 @admin_required
