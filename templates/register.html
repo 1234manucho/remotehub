@@ -2,236 +2,229 @@
 {% block title %}Create Account – RemoteHub{% endblock %}
 
 {% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root{
     --rh-green:#14a800;
-    --rh-green-dark:#0f8a00;
+    --rh-green-dark:#108a00;
     --rh-ink:#001e00;
     --rh-muted:#5e6d55;
     --rh-line:#e4ebe4;
+    --rh-bg:#f7faf7;
+    --rh-card:#ffffff;
   }
+  *{box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:var(--rh-bg);color:var(--rh-ink);margin:0}
 
-  .rh-login-wrap{
-    position:relative;
-    min-height:calc(100vh - 80px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:60px 20px;
+  .rh-auth-wrap{
+    position:relative;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:40px 20px;overflow:hidden;
     background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.08), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(20,168,0,.10), transparent 60%),
-      #f4f9f4;
-    overflow:hidden;
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      radial-gradient(1000px 600px at 90% 10%, rgba(20,168,0,.10), transparent 60%),
+      radial-gradient(800px 500px at 0% 100%, rgba(20,168,0,.08), transparent 60%),
+      linear-gradient(180deg,#f3f8f3,#eaf3ea);
   }
 
-  /* Rotating globe background */
+  /* Rotating globe */
+  .rh-globe,.rh-orbit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0}
   .rh-globe{
-    position:absolute;
-    top:50%; left:50%;
-    width:min(820px, 110vw);
-    height:min(820px, 110vw);
-    transform:translate(-50%,-50%);
-    border-radius:50%;
-    pointer-events:none;
-    opacity:.55;
+    width:820px;height:820px;max-width:110vw;max-height:110vw;opacity:.45;
     background:
-      radial-gradient(circle at 30% 30%, rgba(255,255,255,.7), rgba(255,255,255,0) 45%),
-      radial-gradient(circle at 50% 50%, #d6f1d0 0%, #b8e3ad 40%, #7cc46a 75%, #2f8f1d 100%);
-    box-shadow:
-      inset -40px -40px 100px rgba(0,40,0,.35),
-      inset 30px 30px 80px rgba(255,255,255,.25),
-      0 30px 80px rgba(20,168,0,.25);
-    overflow:hidden;
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.85), rgba(255,255,255,0) 45%),
+      radial-gradient(circle at 70% 70%, rgba(20,168,0,.35), rgba(20,168,0,0) 55%),
+      conic-gradient(from 0deg, #d6efd6, #b9e3b9, #a5dca5, #c8e9c8, #d6efd6);
+    box-shadow:inset -40px -60px 120px rgba(0,40,0,.25), 0 30px 80px rgba(0,60,0,.15);
     animation:rh-spin 60s linear infinite;
   }
-  .rh-globe::before,
-  .rh-globe::after{
-    content:"";
-    position:absolute; inset:0;
-    border-radius:50%;
-    background-repeat:repeat;
+  .rh-globe::before,.rh-globe::after{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    background:
+      radial-gradient(ellipse 90px 40px at 25% 30%, rgba(16,138,0,.55), transparent 60%),
+      radial-gradient(ellipse 140px 60px at 60% 45%, rgba(16,138,0,.5), transparent 60%),
+      radial-gradient(ellipse 70px 35px at 75% 70%, rgba(16,138,0,.55), transparent 60%),
+      radial-gradient(ellipse 110px 50px at 35% 75%, rgba(16,138,0,.45), transparent 60%);
     mix-blend-mode:multiply;
-    opacity:.55;
-  }
-  .rh-globe::before{
-    background-image:
-      repeating-linear-gradient(0deg, rgba(0,60,0,.25) 0 1px, transparent 1px 40px),
-      repeating-linear-gradient(90deg, rgba(0,60,0,.25) 0 1px, transparent 1px 40px);
-    mask-image:radial-gradient(circle, #000 55%, transparent 75%);
-    -webkit-mask-image:radial-gradient(circle, #000 55%, transparent 75%);
   }
   .rh-globe::after{
     background:
-      radial-gradient(40px 24px at 22% 38%, #1f6b12 60%, transparent 62%),
-      radial-gradient(70px 36px at 35% 30%, #1f6b12 60%, transparent 62%),
-      radial-gradient(60px 30px at 48% 55%, #1f6b12 60%, transparent 62%),
-      radial-gradient(90px 50px at 70% 42%, #1f6b12 60%, transparent 62%),
-      radial-gradient(40px 60px at 78% 65%, #1f6b12 60%, transparent 62%),
-      radial-gradient(50px 28px at 30% 70%, #1f6b12 60%, transparent 62%),
-      radial-gradient(30px 20px at 60% 78%, #1f6b12 60%, transparent 62%);
-    opacity:.7;
+      repeating-linear-gradient(90deg, rgba(0,40,0,.06) 0 1px, transparent 1px 60px),
+      repeating-linear-gradient(0deg, rgba(0,40,0,.05) 0 1px, transparent 1px 60px);
+    opacity:.6;
   }
-
-  @keyframes rh-spin{ to{ transform:translate(-50%,-50%) rotate(360deg);} }
+  .rh-orbit{
+    width:960px;height:960px;max-width:120vw;max-height:120vw;
+    border:1.5px dashed rgba(20,168,0,.35);
+    animation:rh-spin 90s linear infinite reverse;
+  }
+  .rh-orbit::after{
+    content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;border-radius:50%;
+    background:var(--rh-green);box-shadow:0 0 18px rgba(20,168,0,.7);transform:translateX(-50%);
+  }
+  @keyframes rh-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
   /* Card */
   .rh-card{
-    position:relative;
-    z-index:2;
-    width:100%;
-    max-width:480px;
-    background:#fff;
-    border-radius:20px;
-    box-shadow:0 30px 80px rgba(0,30,0,.18), 0 8px 24px rgba(0,30,0,.06);
-    padding:48px 44px;
-    border:1px solid var(--rh-line);
+    position:relative;z-index:2;width:100%;max-width:980px;
+    background:var(--rh-card);border:1px solid var(--rh-line);border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,30,0,.18);overflow:hidden;
+    display:grid;grid-template-columns:1fr 1.1fr;
   }
+  .rh-side{
+    background:linear-gradient(160deg,#0b3b0b,#14a800 120%);
+    color:#fff;padding:48px 40px;position:relative;overflow:hidden;
+  }
+  .rh-side::after{
+    content:"";position:absolute;inset:auto -60px -60px auto;width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.25),transparent 60%);
+  }
+  .rh-side .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin-bottom:28px}
+  .rh-side .logo i{background:rgba(255,255,255,.15);width:38px;height:38px;border-radius:10px;display:grid;place-items:center}
+  .rh-side h2{font-size:28px;line-height:1.25;margin:0 0 12px;font-weight:800}
+  .rh-side p{color:rgba(255,255,255,.85);margin:0 0 24px;font-size:14.5px;line-height:1.6}
+  .rh-feats{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+  .rh-feats li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:rgba(255,255,255,.92)}
+  .rh-feats i{color:#bff0bf;margin-top:3px}
 
-  .rh-card h1{
-    font-size:28px; font-weight:800; color:var(--rh-ink); margin:0 0 6px;
-  }
-  .rh-card .sub{ color:var(--rh-muted); font-size:14px; margin:0 0 28px;}
+  .rh-form-wrap{padding:48px 44px}
+  .rh-form-wrap h1{font-size:26px;font-weight:800;margin:0 0 6px;color:var(--rh-ink)}
+  .rh-form-wrap .sub{color:var(--rh-muted);margin:0 0 26px;font-size:14.5px}
 
-  .rh-field{ margin-bottom:18px; }
-  .rh-field label{
-    display:block; font-size:13px; font-weight:600; color:var(--rh-ink); margin-bottom:8px;
+  .rh-field{margin-bottom:16px}
+  .rh-field label{display:block;font-size:13px;font-weight:600;color:var(--rh-ink);margin-bottom:6px}
+  .rh-input-wrap{position:relative}
+  .rh-input-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--rh-muted);font-size:14px}
+  .rh-field input{
+    width:100%;padding:12px 14px 12px 42px;border:1.5px solid var(--rh-line);border-radius:10px;
+    font-size:15px;font-family:inherit;color:var(--rh-ink);background:#fff;transition:.2s;
   }
-  .rh-input{
-    position:relative;
-  }
-  .rh-input i{
-    position:absolute; left:14px; top:50%; transform:translateY(-50%);
-    color:#8aa183; font-size:14px;
-  }
-  .rh-input input{
-    width:100%;
-    padding:13px 14px 13px 42px;
-    border:1.5px solid var(--rh-line);
-    border-radius:10px;
-    font-size:15px;
-    background:#fbfdfb;
-    color:var(--rh-ink);
-    transition:border-color .15s, box-shadow .15s, background .15s;
-    outline:none;
-    box-sizing:border-box;
-  }
-  .rh-input input:focus{
-    border-color:var(--rh-green);
-    background:#fff;
-    box-shadow:0 0 0 4px rgba(20,168,0,.12);
-  }
-  .rh-toggle-pw{
-    position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    background:none; border:0; color:#8aa183; cursor:pointer; padding:6px; font-size:14px;
-  }
+  .rh-field input:focus{outline:none;border-color:var(--rh-green);box-shadow:0 0 0 4px rgba(20,168,0,.12)}
+  .rh-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--rh-muted);cursor:pointer;padding:6px}
 
-  .rh-row{
-    display:flex; align-items:flex-start; gap:8px;
-    margin:6px 0 22px; font-size:13px;
-  }
-  .rh-row input[type=checkbox]{ accent-color:var(--rh-green); width:16px; height:16px; margin-top:2px;}
-  .rh-row label{ color:var(--rh-ink); line-height:1.5;}
-  .rh-row label a{ color:var(--rh-green); text-decoration:none; font-weight:600;}
-  .rh-row label a:hover{ text-decoration:underline;}
+  .rh-check{display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:var(--rh-muted);margin:6px 0 18px;line-height:1.5}
+  .rh-check input{accent-color:var(--rh-green);margin-top:3px}
+  .rh-check a{color:var(--rh-green);font-weight:600;text-decoration:none}
+  .rh-check a:hover{text-decoration:underline}
 
   .rh-btn{
-    width:100%;
-    padding:14px;
-    border:0; border-radius:10px;
-    background:var(--rh-green); color:#fff;
-    font-size:15px; font-weight:700; cursor:pointer;
-    transition:background .15s, transform .05s, box-shadow .15s;
-    box-shadow:0 8px 20px rgba(20,168,0,.25);
+    width:100%;padding:13px;border:none;border-radius:10px;background:var(--rh-green);color:#fff;
+    font-size:15px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
   }
-  .rh-btn:hover{ background:var(--rh-green-dark); }
-  .rh-btn:active{ transform:translateY(1px); }
+  .rh-btn:hover{background:var(--rh-green-dark);transform:translateY(-1px);box-shadow:0 10px 24px rgba(20,168,0,.3)}
 
-  .rh-foot{
-    margin-top:24px; text-align:center; font-size:14px; color:var(--rh-muted);
+  .rh-divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--rh-muted);font-size:12px;font-weight:600;text-transform:uppercase}
+  .rh-divider::before,.rh-divider::after{content:"";flex:1;height:1px;background:var(--rh-line)}
+
+  .rh-social{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .rh-social button{
+    padding:11px;border:1.5px solid var(--rh-line);border-radius:10px;background:#fff;cursor:pointer;
+    font-weight:600;font-size:14px;color:var(--rh-ink);display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;
   }
-  .rh-foot a{ color:var(--rh-green); font-weight:700; text-decoration:none;}
-  .rh-foot a:hover{ text-decoration:underline;}
+  .rh-social button:hover{border-color:var(--rh-green);background:#f4faf4}
 
-  @media (max-width: 480px){
-    .rh-login-wrap{ padding:30px 14px;}
-    .rh-card{ padding:34px 26px;}
-    .rh-card h1{ font-size:24px;}
+  .rh-foot{text-align:center;color:var(--rh-muted);font-size:14px;margin-top:22px}
+  .rh-foot a{color:var(--rh-green);font-weight:700;text-decoration:none}
+  .rh-foot a:hover{text-decoration:underline}
+
+  @media (max-width:860px){
+    .rh-card{grid-template-columns:1fr;max-width:520px}
+    .rh-side{padding:32px 28px}
+    .rh-side h2{font-size:22px}
+    .rh-form-wrap{padding:32px 26px}
+  }
+  @media (max-width:480px){
+    .rh-auth-wrap{padding:20px 12px}
+    .rh-social{grid-template-columns:1fr}
+    .rh-form-wrap h1{font-size:22px}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="rh-login-wrap">
-  <div class="rh-globe" aria-hidden="true"></div>
+<div class="rh-auth-wrap">
+  <div class="rh-orbit"></div>
+  <div class="rh-globe"></div>
 
   <div class="rh-card">
-    <h1>Join RemoteHub</h1>
-    <p class="sub">Start your remote career journey</p>
+    <aside class="rh-side">
+      <div class="logo"><i class="fas fa-globe-americas"></i> RemoteHub</div>
+      <h2>Launch your remote career today</h2>
+      <p>Join thousands of professionals finding meaningful work from anywhere in the world.</p>
+      <ul class="rh-feats">
+        <li><i class="fas fa-check-circle"></i> Access 10,000+ verified remote jobs</li>
+        <li><i class="fas fa-check-circle"></i> Apply to global companies in one click</li>
+        <li><i class="fas fa-check-circle"></i> Build a profile that gets noticed</li>
+        <li><i class="fas fa-check-circle"></i> Free forever — no hidden fees</li>
+      </ul>
+    </aside>
 
-    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
-      <div class="rh-field">
-        <label for="username">Username</label>
-        <div class="rh-input">
-          <i class="fas fa-user"></i>
-          <input id="username" type="text" name="username" placeholder="Your username" required>
+    <div class="rh-form-wrap">
+      <h1>Join RemoteHub</h1>
+      <p class="sub">Start your remote career journey</p>
+
+      <form method="POST" action="{{ url_for('register') }}" novalidate>
+        {% if form and form.hidden_tag %}{{ form.hidden_tag() }}{% endif %}
+
+        <div class="rh-field">
+          <label for="username">Username</label>
+          <div class="rh-input-wrap">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" name="username" placeholder="yourusername" required>
+          </div>
         </div>
-      </div>
 
-      <div class="rh-field">
-        <label for="email">Email address</label>
-        <div class="rh-input">
-          <i class="fas fa-envelope"></i>
-          <input id="email" type="email" name="email" placeholder="you@example.com" required>
+        <div class="rh-field">
+          <label for="email">Email</label>
+          <div class="rh-input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" name="email" placeholder="name@example.com" required>
+          </div>
         </div>
-      </div>
 
-      <div class="rh-field">
-        <label for="password">Password</label>
-        <div class="rh-input">
-          <i class="fas fa-lock"></i>
-          <input id="password" type="password" name="password" placeholder="At least 6 characters" required minlength="6">
-          <button type="button" class="rh-toggle-pw" onclick="rhTogglePw('password', 'eye1')" aria-label="Show password">
-            <i class="fas fa-eye" id="eye1"></i>
-          </button>
+        <div class="rh-field">
+          <label for="password">Password</label>
+          <div class="rh-input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+            <button type="button" class="rh-toggle" onclick="rhTogglePw('password', this)"><i class="fas fa-eye"></i></button>
+          </div>
         </div>
-      </div>
 
-      <div class="rh-field">
-        <label for="confirm_password">Confirm Password</label>
-        <div class="rh-input">
-          <i class="fas fa-lock"></i>
-          <input id="confirm_password" type="password" name="confirm_password" placeholder="Repeat your password" required minlength="6">
-          <button type="button" class="rh-toggle-pw" onclick="rhTogglePw('confirm_password', 'eye2')" aria-label="Show password">
-            <i class="fas fa-eye" id="eye2"></i>
-          </button>
+        <div class="rh-field">
+          <label for="confirm_password">Confirm Password</label>
+          <div class="rh-input-wrap">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+            <button type="button" class="rh-toggle" onclick="rhTogglePw('confirm_password', this)"><i class="fas fa-eye"></i></button>
+          </div>
         </div>
-      </div>
 
-      <div class="rh-row">
-        <input type="checkbox" id="terms" required>
-        <label for="terms">
-          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        <label class="rh-check">
+          <input type="checkbox" name="agree" required>
+          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
         </label>
+
+        <button type="submit" class="rh-btn"><i class="fas fa-user-plus"></i> Create Account</button>
+      </form>
+
+      <div class="rh-divider">Or sign up with</div>
+      <div class="rh-social">
+        <button type="button"><i class="fab fa-google" style="color:#ea4335"></i> Google</button>
+        <button type="button"><i class="fab fa-github"></i> GitHub</button>
       </div>
 
-      <button type="submit" class="rh-btn">Create Account</button>
-    </form>
-
-    <p class="rh-foot">
-      Already have an account?
-      <a href="{{ url_for('auth.login') }}">Sign in</a>
-    </p>
+      <p class="rh-foot">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+    </div>
   </div>
 </div>
 
 <script>
-  function rhTogglePw(inputId, iconId){
-    var inp = document.getElementById(inputId);
-    var icon = document.getElementById(iconId);
-    if(inp.type === 'password'){ inp.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
-    else { inp.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+  function rhTogglePw(id, btn){
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if(input.type === 'password'){ input.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+    else { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
   }
 </script>
 {% endblock %}
