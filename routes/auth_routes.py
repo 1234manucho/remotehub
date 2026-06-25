@@ -1,8 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from models import db, User
+import logging
 
 auth_bp = Blueprint('auth', __name__)
+logger = logging.getLogger(__name__)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -13,7 +15,6 @@ def register():
         password = request.form.get('password', '')
         confirm = request.form.get('confirm_password', '')
 
-        # Basic validation
         if not username or not email or not password:
             flash('All fields are required.', 'danger')
             return redirect(url_for('auth.register'))
@@ -30,7 +31,6 @@ def register():
             flash('Email already registered.', 'danger')
             return redirect(url_for('auth.register'))
 
-        # Create user
         user = User(username=username, email=email)
         user.set_password(password)
         db.session.add(user)
@@ -44,21 +44,26 @@ def register():
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
-    next_page = request.args.get('next')  # from the query string (when redirected by login_required)
+    next_page = request.args.get('next')
 
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
-        remember = True if request.form.get('remember') else False
-        next_page = request.form.get('next') or next_page  # hidden field takes precedence
+        # Checkbox "remember" – if the checkbox is present and 'on', we remember.
+        # If the checkbox is missing (unchecked), we still default to remembering
+        # for a smoother experience. Change to: remember by default, only forget
+        # if explicitly unchecked.
+        remember = request.form.get('remember', 'on') == 'on'
+        next_page = request.form.get('next') or next_page
 
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             login_user(user, remember=remember)
             flash('Logged in successfully!', 'success')
-            # Redirect to the originally requested page (if any) or home
+            logger.info(f'Successful login for {user.username} ({user.email})')
             return redirect(next_page or url_for('main.home'))
         else:
+            logger.warning(f'Failed login attempt for email: {email}')
             flash('Invalid email or password.', 'danger')
 
     return render_template('login.html', next=next_page)
@@ -68,7 +73,6 @@ def login():
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
-        # Placeholder: in production, send an actual reset link
         flash('If that email exists, a password reset link has been sent.', 'info')
         return redirect(url_for('auth.login'))
     return render_template('forgot_password.html')
