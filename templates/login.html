@@ -2,171 +2,122 @@
 {% block title %}Login – RemoteHub{% endblock %}
 
 {% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root{
     --rh-green:#14a800;
-    --rh-green-dark:#0f8a00;
+    --rh-green-dark:#108a00;
     --rh-ink:#001e00;
     --rh-muted:#5e6d55;
     --rh-line:#e4ebe4;
+    --rh-card:#ffffff;
   }
+  *{box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;color:var(--rh-ink);margin:0}
 
-  .rh-login-wrap{
-    position:relative;
-    min-height:calc(100vh - 80px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:60px 20px;
+  .rh-auth-wrap{
+    position:relative;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:40px 20px;overflow:hidden;
     background:
-      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.08), transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, rgba(20,168,0,.10), transparent 60%),
-      #f4f9f4;
-    overflow:hidden;
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.15), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(0,60,0,.25), transparent 60%),
+      linear-gradient(135deg, #0a2e0a 0%, #0f3f0f 40%, #1a5c1a 100%);
   }
 
-  /* Rotating globe background */
+  /* Rotating globe – dark green tones */
   .rh-globe{
-    position:absolute;
-    top:50%; left:50%;
-    width:min(820px, 110vw);
-    height:min(820px, 110vw);
-    transform:translate(-50%,-50%);
-    border-radius:50%;
-    pointer-events:none;
-    opacity:.55;
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
+    width:820px;height:820px;max-width:110vw;max-height:110vw;opacity:.55;
     background:
-      radial-gradient(circle at 30% 30%, rgba(255,255,255,.7), rgba(255,255,255,0) 45%),
-      radial-gradient(circle at 50% 50%, #d6f1d0 0%, #b8e3ad 40%, #7cc46a 75%, #2f8f1d 100%);
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,.12), rgba(255,255,255,0) 45%),
+      radial-gradient(circle at 50% 50%, #0f3f0f 0%, #0a2e0a 40%, #1a5c1a 75%, #0d360d 100%);
     box-shadow:
-      inset -40px -40px 100px rgba(0,40,0,.35),
-      inset 30px 30px 80px rgba(255,255,255,.25),
-      0 30px 80px rgba(20,168,0,.25);
+      inset -40px -40px 100px rgba(0,0,0,.4),
+      inset 30px 30px 80px rgba(20,168,0,.15),
+      0 30px 80px rgba(0,0,0,.3);
     overflow:hidden;
     animation:rh-spin 60s linear infinite;
   }
   .rh-globe::before,
   .rh-globe::after{
-    content:"";
-    position:absolute; inset:0;
-    border-radius:50%;
-    background-repeat:repeat;
-    mix-blend-mode:multiply;
-    opacity:.55;
+    content:"";position:absolute;inset:0;border-radius:50%;
+    background-repeat:repeat;mix-blend-mode:soft-light;opacity:.4;
   }
-  /* Latitude/longitude grid */
   .rh-globe::before{
     background-image:
-      repeating-linear-gradient(0deg, rgba(0,60,0,.25) 0 1px, transparent 1px 40px),
-      repeating-linear-gradient(90deg, rgba(0,60,0,.25) 0 1px, transparent 1px 40px);
+      repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 40px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 40px);
     mask-image:radial-gradient(circle, #000 55%, transparent 75%);
     -webkit-mask-image:radial-gradient(circle, #000 55%, transparent 75%);
   }
-  /* Faux continents */
   .rh-globe::after{
     background:
-      radial-gradient(40px 24px at 22% 38%, #1f6b12 60%, transparent 62%),
-      radial-gradient(70px 36px at 35% 30%, #1f6b12 60%, transparent 62%),
-      radial-gradient(60px 30px at 48% 55%, #1f6b12 60%, transparent 62%),
-      radial-gradient(90px 50px at 70% 42%, #1f6b12 60%, transparent 62%),
-      radial-gradient(40px 60px at 78% 65%, #1f6b12 60%, transparent 62%),
-      radial-gradient(50px 28px at 30% 70%, #1f6b12 60%, transparent 62%),
-      radial-gradient(30px 20px at 60% 78%, #1f6b12 60%, transparent 62%);
-    opacity:.7;
+      radial-gradient(40px 24px at 22% 38%, #1f6b12 40%, transparent 60%),
+      radial-gradient(70px 36px at 35% 30%, #1f6b12 40%, transparent 60%),
+      radial-gradient(60px 30px at 48% 55%, #1f6b12 40%, transparent 60%),
+      radial-gradient(90px 50px at 70% 42%, #1f6b12 40%, transparent 60%),
+      radial-gradient(40px 60px at 78% 65%, #1f6b12 40%, transparent 60%),
+      radial-gradient(50px 28px at 30% 70%, #1f6b12 40%, transparent 60%),
+      radial-gradient(30px 20px at 60% 78%, #1f6b12 40%, transparent 60%);
   }
-
-  @keyframes rh-spin{ to{ transform:translate(-50%,-50%) rotate(360deg);} }
+  @keyframes rh-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
   /* Card */
   .rh-card{
-    position:relative;
-    z-index:2;
-    width:100%;
-    max-width:480px;
-    background:#fff;
-    border-radius:20px;
-    box-shadow:0 30px 80px rgba(0,30,0,.18), 0 8px 24px rgba(0,30,0,.06);
+    position:relative;z-index:2;width:100%;max-width:480px;
+    background:var(--rh-card);border:1px solid var(--rh-line);border-radius:20px;
+    box-shadow:0 30px 80px rgba(0,0,0,.25);overflow:hidden;
     padding:48px 44px;
-    border:1px solid var(--rh-line);
   }
 
   .rh-card h1{
-    font-size:28px; font-weight:800; color:var(--rh-ink); margin:0 0 6px;
+    font-size:26px;font-weight:800;margin:0 0 6px;color:var(--rh-ink)
   }
-  .rh-card .sub{ color:var(--rh-muted); font-size:14px; margin:0 0 28px;}
+  .rh-card .sub{color:var(--rh-muted);margin:0 0 26px;font-size:14.5px}
 
-  .rh-field{ margin-bottom:18px; }
-  .rh-field label{
-    display:block; font-size:13px; font-weight:600; color:var(--rh-ink); margin-bottom:8px;
+  .rh-field{margin-bottom:16px}
+  .rh-field label{display:block;font-size:13px;font-weight:600;color:var(--rh-ink);margin-bottom:6px}
+  .rh-input-wrap{position:relative}
+  .rh-input-wrap > i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--rh-muted);font-size:14px}
+  .rh-field input{
+    width:100%;padding:12px 14px 12px 42px;border:1.5px solid var(--rh-line);border-radius:10px;
+    font-size:15px;font-family:inherit;color:var(--rh-ink);background:#fff;transition:.2s;
   }
-  .rh-input{
-    position:relative;
-  }
-  .rh-input i{
-    position:absolute; left:14px; top:50%; transform:translateY(-50%);
-    color:#8aa183; font-size:14px;
-  }
-  .rh-input input{
-    width:100%;
-    padding:13px 14px 13px 42px;
-    border:1.5px solid var(--rh-line);
-    border-radius:10px;
-    font-size:15px;
-    background:#fbfdfb;
-    color:var(--rh-ink);
-    transition:border-color .15s, box-shadow .15s, background .15s;
-    outline:none;
-    box-sizing:border-box;
-  }
-  .rh-input input:focus{
-    border-color:var(--rh-green);
-    background:#fff;
-    box-shadow:0 0 0 4px rgba(20,168,0,.12);
-  }
-  .rh-toggle-pw{
-    position:absolute; right:12px; top:50%; transform:translateY(-50%);
-    background:none; border:0; color:#8aa183; cursor:pointer; padding:6px; font-size:14px;
-  }
+  .rh-field input:focus{outline:none;border-color:var(--rh-green);box-shadow:0 0 0 4px rgba(20,168,0,.12)}
+  .rh-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--rh-muted);cursor:pointer;padding:6px}
 
   .rh-row{
-    display:flex; align-items:center; justify-content:space-between;
-    margin:6px 0 22px; font-size:13px;
+    display:flex;align-items:center;justify-content:space-between;
+    margin:6px 0 22px;font-size:13px;
   }
-  .rh-row label{ display:flex; align-items:center; gap:8px; color:var(--rh-ink); cursor:pointer;}
-  .rh-row input[type=checkbox]{ accent-color:var(--rh-green); width:16px; height:16px;}
-  .rh-row a{ color:var(--rh-green); text-decoration:none; font-weight:600;}
-  .rh-row a:hover{ text-decoration:underline;}
+  .rh-row label{display:flex;align-items:center;gap:8px;color:var(--rh-ink);cursor:pointer;}
+  .rh-row input[type=checkbox]{accent-color:var(--rh-green);width:16px;height:16px;}
+  .rh-row a{color:var(--rh-green);text-decoration:none;font-weight:600;}
+  .rh-row a:hover{text-decoration:underline;}
 
   .rh-btn{
-    width:100%;
-    padding:14px;
-    border:0; border-radius:10px;
-    background:var(--rh-green); color:#fff;
-    font-size:15px; font-weight:700; cursor:pointer;
-    transition:background .15s, transform .05s, box-shadow .15s;
-    box-shadow:0 8px 20px rgba(20,168,0,.25);
+    width:100%;padding:13px;border:none;border-radius:10px;background:var(--rh-green);color:#fff;
+    font-size:15px;font-weight:700;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;
   }
-  .rh-btn:hover{ background:var(--rh-green-dark); }
-  .rh-btn:active{ transform:translateY(1px); }
+  .rh-btn:hover{background:var(--rh-green-dark);transform:translateY(-1px);box-shadow:0 10px 24px rgba(20,168,0,.3)}
 
-  .rh-foot{
-    margin-top:24px; text-align:center; font-size:14px; color:var(--rh-muted);
-  }
-  .rh-foot a{ color:var(--rh-green); font-weight:700; text-decoration:none;}
-  .rh-foot a:hover{ text-decoration:underline;}
+  .rh-foot{text-align:center;color:var(--rh-muted);font-size:14px;margin-top:22px}
+  .rh-foot a{color:var(--rh-green);font-weight:700;text-decoration:none}
+  .rh-foot a:hover{text-decoration:underline}
 
-  @media (max-width: 480px){
-    .rh-login-wrap{ padding:30px 14px;}
-    .rh-card{ padding:34px 26px;}
-    .rh-card h1{ font-size:24px;}
+  @media (max-width:480px){
+    .rh-auth-wrap{padding:20px 12px}
+    .rh-card{padding:34px 26px}
+    .rh-card h1{font-size:22px}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="rh-login-wrap">
-  <div class="rh-globe" aria-hidden="true"></div>
+<div class="rh-auth-wrap">
+  <div class="rh-globe"></div>
 
   <div class="rh-card">
     <h1>Welcome back</h1>
@@ -179,7 +130,7 @@
 
       <div class="rh-field">
         <label for="email">Email address</label>
-        <div class="rh-input">
+        <div class="rh-input-wrap">
           <i class="fas fa-envelope"></i>
           <input id="email" type="email" name="email" placeholder="you@example.com" required>
         </div>
@@ -187,11 +138,11 @@
 
       <div class="rh-field">
         <label for="password">Password</label>
-        <div class="rh-input">
+        <div class="rh-input-wrap">
           <i class="fas fa-lock"></i>
           <input id="password" type="password" name="password" placeholder="Enter your password" required>
-          <button type="button" class="rh-toggle-pw" onclick="rhTogglePw()" aria-label="Show password">
-            <i class="fas fa-eye" id="rhEyeIcon"></i>
+          <button type="button" class="rh-toggle" onclick="rhTogglePw('password', this)" aria-label="Show password">
+            <i class="fas fa-eye"></i>
           </button>
         </div>
       </div>
@@ -212,11 +163,11 @@
 </div>
 
 <script>
-  function rhTogglePw(){
-    var inp = document.getElementById('password');
-    var icon = document.getElementById('rhEyeIcon');
-    if(inp.type === 'password'){ inp.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
-    else { inp.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+  function rhTogglePw(id, btn){
+    const input = document.getElementById(id);
+    const icon = btn.querySelector('i');
+    if(input.type === 'password'){ input.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+    else { input.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
   }
 </script>
 {% endblock %}
