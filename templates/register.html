@@ -28,8 +28,8 @@
   }
 
   /* Rotating globe */
-  .rh-globe,.rh-orbit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0}
   .rh-globe{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:0;
     width:820px;height:820px;max-width:110vw;max-height:110vw;opacity:.45;
     background:
       radial-gradient(circle at 35% 30%, rgba(255,255,255,.85), rgba(255,255,255,0) 45%),
@@ -53,43 +53,20 @@
       repeating-linear-gradient(0deg, rgba(0,40,0,.05) 0 1px, transparent 1px 60px);
     opacity:.6;
   }
-  .rh-orbit{
-    width:960px;height:960px;max-width:120vw;max-height:120vw;
-    border:1.5px dashed rgba(20,168,0,.35);
-    animation:rh-spin 90s linear infinite reverse;
-  }
-  .rh-orbit::after{
-    content:"";position:absolute;top:-6px;left:50%;width:12px;height:12px;border-radius:50%;
-    background:var(--rh-green);box-shadow:0 0 18px rgba(20,168,0,.7);transform:translateX(-50%);
-  }
   @keyframes rh-spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
   /* Card */
   .rh-card{
-    position:relative;z-index:2;width:100%;max-width:980px;
+    position:relative;z-index:2;width:100%;max-width:480px;
     background:var(--rh-card);border:1px solid var(--rh-line);border-radius:20px;
     box-shadow:0 30px 80px rgba(0,30,0,.18);overflow:hidden;
-    display:grid;grid-template-columns:1fr 1.1fr;
+    padding:48px 44px;
   }
-  .rh-side{
-    background:linear-gradient(160deg,#0b3b0b,#14a800 120%);
-    color:#fff;padding:48px 40px;position:relative;overflow:hidden;
-  }
-  .rh-side::after{
-    content:"";position:absolute;inset:auto -60px -60px auto;width:280px;height:280px;border-radius:50%;
-    background:radial-gradient(circle,rgba(255,255,255,.25),transparent 60%);
-  }
-  .rh-side .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;margin-bottom:28px}
-  .rh-side .logo i{background:rgba(255,255,255,.15);width:38px;height:38px;border-radius:10px;display:grid;place-items:center}
-  .rh-side h2{font-size:28px;line-height:1.25;margin:0 0 12px;font-weight:800}
-  .rh-side p{color:rgba(255,255,255,.85);margin:0 0 24px;font-size:14.5px;line-height:1.6}
-  .rh-feats{list-style:none;padding:0;margin:0;display:grid;gap:12px}
-  .rh-feats li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:rgba(255,255,255,.92)}
-  .rh-feats i{color:#bff0bf;margin-top:3px}
 
-  .rh-form-wrap{padding:48px 44px}
-  .rh-form-wrap h1{font-size:26px;font-weight:800;margin:0 0 6px;color:var(--rh-ink)}
-  .rh-form-wrap .sub{color:var(--rh-muted);margin:0 0 26px;font-size:14.5px}
+  .rh-card h1{
+    font-size:26px;font-weight:800;margin:0 0 6px;color:var(--rh-ink)
+  }
+  .rh-card .sub{color:var(--rh-muted);margin:0 0 26px;font-size:14.5px}
 
   .rh-field{margin-bottom:16px}
   .rh-field label{display:block;font-size:13px;font-weight:600;color:var(--rh-ink);margin-bottom:6px}
@@ -113,109 +90,70 @@
   }
   .rh-btn:hover{background:var(--rh-green-dark);transform:translateY(-1px);box-shadow:0 10px 24px rgba(20,168,0,.3)}
 
-  .rh-divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--rh-muted);font-size:12px;font-weight:600;text-transform:uppercase}
-  .rh-divider::before,.rh-divider::after{content:"";flex:1;height:1px;background:var(--rh-line)}
-
-  .rh-social{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .rh-social button{
-    padding:11px;border:1.5px solid var(--rh-line);border-radius:10px;background:#fff;cursor:pointer;
-    font-weight:600;font-size:14px;color:var(--rh-ink);display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s;
-  }
-  .rh-social button:hover{border-color:var(--rh-green);background:#f4faf4}
-
   .rh-foot{text-align:center;color:var(--rh-muted);font-size:14px;margin-top:22px}
   .rh-foot a{color:var(--rh-green);font-weight:700;text-decoration:none}
   .rh-foot a:hover{text-decoration:underline}
 
-  @media (max-width:860px){
-    .rh-card{grid-template-columns:1fr;max-width:520px}
-    .rh-side{padding:32px 28px}
-    .rh-side h2{font-size:22px}
-    .rh-form-wrap{padding:32px 26px}
-  }
   @media (max-width:480px){
     .rh-auth-wrap{padding:20px 12px}
-    .rh-social{grid-template-columns:1fr}
-    .rh-form-wrap h1{font-size:22px}
+    .rh-card{padding:34px 26px}
+    .rh-card h1{font-size:22px}
   }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="rh-auth-wrap">
-  <div class="rh-orbit"></div>
   <div class="rh-globe"></div>
 
   <div class="rh-card">
-    <aside class="rh-side">
-      <div class="logo"><i class="fas fa-globe-americas"></i> RemoteHub</div>
-      <h2>Launch your remote career today</h2>
-      <p>Join thousands of professionals finding meaningful work from anywhere in the world.</p>
-      <ul class="rh-feats">
-        <li><i class="fas fa-check-circle"></i> Access 10,000+ verified remote jobs</li>
-        <li><i class="fas fa-check-circle"></i> Apply to global companies in one click</li>
-        <li><i class="fas fa-check-circle"></i> Build a profile that gets noticed</li>
-        <li><i class="fas fa-check-circle"></i> Free forever — no hidden fees</li>
-      </ul>
-    </aside>
+    <h1>Join RemoteHub</h1>
+    <p class="sub">Start your remote career journey</p>
 
-    <div class="rh-form-wrap">
-      <h1>Join RemoteHub</h1>
-      <p class="sub">Start your remote career journey</p>
-
-      <form method="POST" action="{{ url_for('register') }}" novalidate>
-        {% if form and form.hidden_tag %}{{ form.hidden_tag() }}{% endif %}
-
-        <div class="rh-field">
-          <label for="username">Username</label>
-          <div class="rh-input-wrap">
-            <i class="fas fa-user"></i>
-            <input type="text" id="username" name="username" placeholder="yourusername" required>
-          </div>
+    <form method="POST" action="{{ url_for('auth.register') }}" novalidate>
+      <div class="rh-field">
+        <label for="username">Username</label>
+        <div class="rh-input-wrap">
+          <i class="fas fa-user"></i>
+          <input type="text" id="username" name="username" placeholder="yourusername" required>
         </div>
-
-        <div class="rh-field">
-          <label for="email">Email</label>
-          <div class="rh-input-wrap">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="email" name="email" placeholder="name@example.com" required>
-          </div>
-        </div>
-
-        <div class="rh-field">
-          <label for="password">Password</label>
-          <div class="rh-input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="password" name="password" placeholder="Create a strong password" required>
-            <button type="button" class="rh-toggle" onclick="rhTogglePw('password', this)"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-
-        <div class="rh-field">
-          <label for="confirm_password">Confirm Password</label>
-          <div class="rh-input-wrap">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
-            <button type="button" class="rh-toggle" onclick="rhTogglePw('confirm_password', this)"><i class="fas fa-eye"></i></button>
-          </div>
-        </div>
-
-        <label class="rh-check">
-          <input type="checkbox" name="agree" required>
-          <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-        </label>
-
-        <button type="submit" class="rh-btn"><i class="fas fa-user-plus"></i> Create Account</button>
-      </form>
-
-      <div class="rh-divider">Or sign up with</div>
-      <div class="rh-social">
-        <button type="button"><i class="fab fa-google" style="color:#ea4335"></i> Google</button>
-        <button type="button"><i class="fab fa-github"></i> GitHub</button>
       </div>
 
-      <p class="rh-foot">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
-    </div>
+      <div class="rh-field">
+        <label for="email">Email</label>
+        <div class="rh-input-wrap">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" name="email" placeholder="name@example.com" required>
+        </div>
+      </div>
+
+      <div class="rh-field">
+        <label for="password">Password</label>
+        <div class="rh-input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+          <button type="button" class="rh-toggle" onclick="rhTogglePw('password', this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+
+      <div class="rh-field">
+        <label for="confirm_password">Confirm Password</label>
+        <div class="rh-input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required>
+          <button type="button" class="rh-toggle" onclick="rhTogglePw('confirm_password', this)"><i class="fas fa-eye"></i></button>
+        </div>
+      </div>
+
+      <label class="rh-check">
+        <input type="checkbox" name="agree" required>
+        <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+      </label>
+
+      <button type="submit" class="rh-btn"><i class="fas fa-user-plus"></i> Create Account</button>
+    </form>
+
+    <p class="rh-foot">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
   </div>
 </div>
 
