@@ -15,7 +15,7 @@ from routes.admin_routes import admin_bp
 from routes.profile_routes import profile_bp
 from routes.chat_routes import chat_bp
 from routes.notifications_routes import notif_bp
-
+from routes.withdraw_routes import withdraw_bp
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,7 +50,7 @@ def create_app(config_class=Config):
     app.register_blueprint(profile_bp, url_prefix='/profile')
     app.register_blueprint(chat_bp, url_prefix='/chat')
     app.register_blueprint(notif_bp, url_prefix='/notifications')
-
+    app.register_blueprint(withdraw_bp, url_prefix='/withdraw')
     # Custom filter: clean slugs for category URLs
     @app.template_filter('slugify')
     def slugify(text):

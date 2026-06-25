@@ -1,21 +1,14 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import Job, db, ProxyPurchase, JobApplication, SavedJob
+from models import Job, db, JobApplication, SavedJob
 
 job_bp = Blueprint('jobs', __name__)
 
-def user_has_proxy():
-    """Return True if the current user is admin OR owns at least one valid proxy."""
-    if current_user.is_admin:
-        return True
-    return ProxyPurchase.query.filter_by(user_id=current_user.id).first() is not None
+# Removed the user_has_proxy() function – proxy not needed for job access
 
 @job_bp.route('/browse')
 @login_required
 def browse():
-    if not user_has_proxy():
-        return render_template('no_proxy.html')
-
     q = request.args.get('q', '').strip()
     category_filter = request.args.get('category', '')
     type_filter = request.args.get('type', '')
@@ -91,9 +84,6 @@ def search():
 @job_bp.route('/category/<slug>')
 @login_required
 def category(slug):
-    if not user_has_proxy():
-        return render_template('no_proxy.html')
-
     name = slug.replace('-', ' ')
     name = name.title()
     name = name.replace(' And ', ' & ')
@@ -106,9 +96,6 @@ def category(slug):
 @job_bp.route('/job/<int:job_id>')
 @login_required
 def detail(job_id):
-    if not user_has_proxy():
-        return render_template('no_proxy.html')
-
     job = Job.query.get_or_404(job_id)
     return render_template('job_detail.html', job=job)
 
@@ -117,9 +104,6 @@ def detail(job_id):
 @job_bp.route('/apply/<int:job_id>', methods=['POST'])
 @login_required
 def apply(job_id):
-    if not user_has_proxy():
-        return render_template('no_proxy.html')
-
     job = Job.query.get_or_404(job_id)
     existing = JobApplication.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:
@@ -136,9 +120,6 @@ def apply(job_id):
 @job_bp.route('/save/<int:job_id>', methods=['POST'])
 @login_required
 def save_job(job_id):
-    if not user_has_proxy():
-        return render_template('no_proxy.html')
-
     job = Job.query.get_or_404(job_id)
     existing = SavedJob.query.filter_by(user_id=current_user.id, job_id=job.id).first()
     if existing:

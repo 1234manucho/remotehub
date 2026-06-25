@@ -10,10 +10,6 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'remotehub.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # PayHero settings
-    PAYHERO_BASE_URL = os.environ.get('PAYHERO_BASE_URL', 'https://payhero.co.ke')
-    PAYHERO_API_USERNAME = os.environ.get('PAYHERO_API_USERNAME')
-    PAYHERO_API_PASSWORD = os.environ.get('PAYHERO_API_PASSWORD')
-    PAYHERO_CHECKOUT_URL = os.environ.get('PAYHERO_CHECKOUT_URL')
-    PAYHERO_CHANNEL_ID = os.environ.get('PAYHERO_CHANNEL_ID')   # <-- new
-    PAYHERO_CALLBACK_URL = os.environ.get('PAYHERO_CALLBACK_URL')
+    # TRC20 Crypto Payment Settings
+    TRC20_WALLET = os.environ.get('TRC20_WALLET', 'TV3niXZ93z7vN98wBBkpgTFb7cpz8hcq3Y')
+    TRC20_CONTRACT = os.environ.get('TRC20_CONTRACT', 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t')

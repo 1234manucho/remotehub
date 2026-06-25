@@ -1,39 +1,36 @@
 {% extends "base.html" %}
-{% block title %}My Conversations – RemoteHub{% endblock %}
+{% block title %}Chats – RemoteHub{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">My Conversations</h1>
+<div class="max-w-2xl mx-auto px-4 py-6">
+    <h1 class="text-xl font-bold text-gray-800 mb-4">Chats</h1>
 
     {% if conversations %}
-    <div class="space-y-4">
+    <div class="space-y-2">
         {% for conv in conversations %}
         <a href="{{ url_for('chat.view_conversation', conv_id=conv.id) }}" 
-           class="block glass-card rounded-xl p-5 hover:shadow-md transition">
-            <div class="flex justify-between items-start">
-                <div>
-                    <h3 class="font-semibold text-gray-800">
-                        {% if conv.job %}{{ conv.job.title }}{% else %}General Chat{% endif %}
+           class="flex items-center p-3 bg-white rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition">
+            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-lg flex-shrink-0">
+                {{ conv.admin.full_name[:1] if conv.admin else 'S' }}
+            </div>
+            <div class="ml-3 flex-1 min-w-0">
+                <div class="flex justify-between items-baseline">
+                    <h3 class="font-semibold text-gray-800 truncate">
+                        {% if conv.job %}{{ conv.job.title }}{% else %}Support{% endif %}
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">
-                        With: {{ conv.admin.full_name or 'Admin' if conv.admin else 'Support' }}
-                    </p>
-                    <p class="text-xs text-gray-400 mt-1">
-                        Last updated: {{ conv.updated_at.strftime('%b %d, %Y at %H:%M') }}
-                    </p>
+                    <span class="text-xs text-gray-400 ml-2 flex-shrink-0">{{ conv._last_time }}</span>
                 </div>
-                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                    {{ conv._msg_count }} messages
-                </span>
+                <p class="text-sm text-gray-500 truncate">{{ conv._last_msg or 'No messages yet' }}</p>
             </div>
         </a>
         {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-12 text-gray-500">
-        <p class="text-xl mb-2">No conversations yet.</p>
-        <p>Start by applying to a job and chatting with the employer.</p>
-        <a href="{{ url_for('jobs.browse') }}" class="text-green-600 font-medium hover:underline mt-4 inline-block">Browse Jobs</a>
+    <div class="text-center py-16 text-gray-500">
+        <div class="text-5xl mb-4">💬</div>
+        <p class="text-lg">No conversations yet.</p>
+        <p class="text-sm mt-1">Apply to a job and start chatting with the employer.</p>
+        <a href="{{ url_for('jobs.browse') }}" class="inline-block mt-4 bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 text-sm font-medium">Browse Jobs</a>
     </div>
     {% endif %}
 </div>

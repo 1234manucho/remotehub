@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models import db, User, Job, ProxyPlan, Payment, Conversation, UserSubscription, SubscriptionPlan
+from models import db, User, Job, ProxyPlan, Payment, Conversation, UserSubscription, SubscriptionPlan, Message, Withdrawal
 from datetime import datetime, timezone, timedelta
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -27,11 +27,9 @@ def dashboard():
     total_payments = Payment.query.filter_by(status='completed').count()
     total_conversations = Conversation.query.count()
 
-    # Proxy earnings
     proxy_earnings = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
                       .filter(Payment.status == 'completed').scalar()
 
-    # Chat subscription earnings – join through UserSubscription
     chat_earnings = db.session.query(func.coalesce(func.sum(SubscriptionPlan.price), 0)) \
                     .join(UserSubscription, UserSubscription.plan_id == SubscriptionPlan.id) \
                     .filter(UserSubscription.is_active == True).scalar()
@@ -43,7 +41,14 @@ def dashboard():
     recent_payments = Payment.query.filter_by(status='completed') \
                       .order_by(Payment.completed_at.desc()).limit(5).all()
 
-    # Chart data – last 7 days
+    # Pending crypto payments (awaiting admin approval)
+    pending_payments = Payment.query.filter_by(status='pending') \
+                       .order_by(Payment.created_at.desc()).all()
+
+    # Pending withdrawals
+    pending_withdrawals = Withdrawal.query.filter_by(status='pending') \
+                         .order_by(Withdrawal.created_at.desc()).all()
+
     chart_labels = []
     chart_data = []
     today = datetime.now(timezone.utc).date()
@@ -67,6 +72,8 @@ def dashboard():
                            recent_users=recent_users,
                            recent_jobs=recent_jobs,
                            recent_payments=recent_payments,
+                           pending_payments=pending_payments,
+                           pending_withdrawals=pending_withdrawals,
                            chart_labels=chart_labels,
                            chart_data=chart_data)
 
@@ -135,4 +142,36 @@ def toggle_proxy_plan(plan_id):
 @admin_required
 def manage_conversations():
     convos = Conversation.query.order_by(Conversation.updated_at.desc()).all()
-    return render_template('admin/conversations.html', conversations=convos)
+    plans = ProxyPlan.query.filter_by(is_active=True).all()
+    return render_template('admin/conversations.html', conversations=convos, proxy_plans=plans)
+
+# ==================== ASSIGN PROXY TO CONVERSATION ====================
+@admin_bp.route('/conversations/<int:conv_id>/assign-proxy', methods=['POST'])
+@admin_required
+def assign_proxy(conv_id):
+    conv = Conversation.query.get_or_404(conv_id)
+    plan_id = request.form.get('plan_id')
+    if not plan_id:
+        flash('Please select a proxy plan.', 'danger')
+        return redirect(url_for('chat.view_conversation', conv_id=conv_id))
+
+    plan = ProxyPlan.query.get(int(plan_id))
+    if not plan:
+        flash('Invalid proxy plan.', 'danger')
+        return redirect(url_for('chat.view_conversation', conv_id=conv_id))
+
+    conv.assigned_proxy_plan_id = plan.id
+    db.session.commit()
+
+    system_msg = Message(
+        conversation_id=conv.id,
+        sender_id=current_user.id,
+        receiver_id=conv.user_id,
+        content=f"🔒 Admin assigned a proxy plan: **{plan.name}** (${plan.price}). Please purchase to continue the conversation.",
+        is_read=False
+    )
+    db.session.add(system_msg)
+    db.session.commit()
+
+    flash(f'Proxy plan "{plan.name}" assigned to {conv.user.username}.', 'success')
+    return redirect(url_for('chat.view_conversation', conv_id=conv_id))

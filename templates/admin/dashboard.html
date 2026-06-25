@@ -99,6 +99,78 @@
             </div>
         </div>
 
+        <!-- Pending Crypto Payments -->
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+            <h3 class="font-semibold text-gray-800 mb-4">Pending Crypto Payments</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100 text-left">
+                        <tr>
+                            <th class="px-4 py-2">ID</th>
+                            <th class="px-4 py-2">User</th>
+                            <th class="px-4 py-2">Plan</th>
+                            <th class="px-4 py-2">Amount</th>
+                            <th class="px-4 py-2">Date</th>
+                            <th class="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        {% for p in pending_payments %}
+                        <tr>
+                            <td class="px-4 py-2">#{{ p.id }}</td>
+                            <td class="px-4 py-2">{{ p.user.username }}</td>
+                            <td class="px-4 py-2">{{ p.plan.name if p.plan else 'N/A' }}</td>
+                            <td class="px-4 py-2">${{ "%.2f"|format(p.amount) }}</td>
+                            <td class="px-4 py-2">{{ p.created_at.strftime('%b %d, %H:%M') }}</td>
+                            <td class="px-4 py-2 space-x-2">
+                                <a href="{{ url_for('proxy.admin_approve', payment_id=p.id) }}" class="text-green-600 hover:underline text-xs">Approve</a>
+                                <a href="{{ url_for('proxy.admin_reject', payment_id=p.id) }}" class="text-red-600 hover:underline text-xs">Reject</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="text-center py-4 text-gray-400">No pending payments.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pending Withdrawals -->
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+            <h3 class="font-semibold text-gray-800 mb-4">Pending Withdrawals</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-100 text-left">
+                        <tr>
+                            <th class="px-4 py-2">ID</th>
+                            <th class="px-4 py-2">User</th>
+                            <th class="px-4 py-2">Amount</th>
+                            <th class="px-4 py-2">Wallet</th>
+                            <th class="px-4 py-2">Date</th>
+                            <th class="px-4 py-2">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        {% for w in pending_withdrawals %}
+                        <tr>
+                            <td class="px-4 py-2">#{{ w.id }}</td>
+                            <td class="px-4 py-2">{{ w.user.username }}</td>
+                            <td class="px-4 py-2">${{ "%.2f"|format(w.amount) }}</td>
+                            <td class="px-4 py-2 text-xs break-all">{{ w.phone_number[:20] }}…</td>
+                            <td class="px-4 py-2">{{ w.created_at.strftime('%b %d, %H:%M') }}</td>
+                            <td class="px-4 py-2 space-x-2">
+                                <a href="{{ url_for('withdraw.admin_approve', withdrawal_id=w.id) }}" class="text-green-600 hover:underline text-xs">Approve</a>
+                                <a href="{{ url_for('withdraw.admin_reject', withdrawal_id=w.id) }}" class="text-red-600 hover:underline text-xs">Reject</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="6" class="text-center py-4 text-gray-400">No pending withdrawals.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Recent Activity -->
         <div class="grid md:grid-cols-3 gap-6">
             <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
@@ -139,7 +211,6 @@
 </div>
 
 <script>
-    // Mobile sidebar toggle
     const sidebar = document.getElementById('sidebar');
     document.getElementById('open-sidebar')?.addEventListener('click', () => {
         sidebar.classList.remove('-translate-x-full');

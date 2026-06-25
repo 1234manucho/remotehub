@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
-# ---------- existing tables (unchanged) ----------
+# ---------- EXISTING TABLES (UNCHANGED) ----------
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -30,10 +30,10 @@ class User(UserMixin, db.Model):
     saved_jobs = db.relationship('SavedJob', backref='user', lazy='dynamic')
     proxy_purchases = db.relationship('ProxyPurchase', backref='user', lazy='dynamic')
     notifications = db.relationship('Notification', backref='user', lazy='dynamic')
-    # new relationships for chat & subscriptions
     messages_sent = db.relationship('Message', foreign_keys='Message.sender_id', backref='sender', lazy='dynamic')
     messages_received = db.relationship('Message', foreign_keys='Message.receiver_id', backref='receiver', lazy='dynamic')
     subscriptions = db.relationship('UserSubscription', backref='user', lazy='dynamic')
+    withdrawals = db.relationship('Withdrawal', backref='user', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -156,6 +156,7 @@ class Payment(db.Model):
     transaction_id = db.Column(db.String(100), unique=True)
     payhero_reference = db.Column(db.String(100), unique=True, nullable=True)
     proxy_purchase_id = db.Column(db.Integer, db.ForeignKey('proxy_purchases.id'))
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=True)   # NEW
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = db.Column(db.DateTime)
 
@@ -168,15 +169,17 @@ class ActivityLog(db.Model):
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-# ===================== NEW MODELS FOR CHAT & SUBSCRIPTION =====================
+# ===================== CHAT & SUBSCRIPTION =====================
 
 class Conversation(db.Model):
     """A conversation between a user and an admin/employer about a specific job."""
     __tablename__ = 'conversations'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)  # employer/admin
-    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=True)     # related job
+    admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=True)
+    assigned_proxy_plan_id = db.Column(db.Integer, db.ForeignKey('proxy_plans.id'), nullable=True)   # NEW
+    proxy_purchase_id = db.Column(db.Integer, db.ForeignKey('proxy_purchases.id'), nullable=True)   # NEW
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -184,30 +187,29 @@ class Conversation(db.Model):
     admin = db.relationship('User', foreign_keys=[admin_id])
     job = db.relationship('Job')
     messages = db.relationship('Message', backref='conversation', lazy='dynamic', order_by='Message.timestamp')
+    assigned_plan = db.relationship('ProxyPlan', foreign_keys=[assigned_proxy_plan_id])   # NEW
 
 
 class Message(db.Model):
-    """Individual chat message."""
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True)
     conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     receiver_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    attachment = db.Column(db.String(256))          # optional image/file path
+    attachment = db.Column(db.String(256))
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     is_read = db.Column(db.Boolean, default=False)
 
 
 class SubscriptionPlan(db.Model):
-    """Plans for the chat subscription (e.g., $20/month)."""
     __tablename__ = 'subscription_plans'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text)
     price = db.Column(db.Float, nullable=False)
-    duration_days = db.Column(db.Integer, default=30)     # e.g., 30 days
-    message_limit = db.Column(db.Integer, default=0)     # 0 = unlimited after paid
+    duration_days = db.Column(db.Integer, default=30)
+    message_limit = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -215,7 +217,6 @@ class SubscriptionPlan(db.Model):
 
 
 class UserSubscription(db.Model):
-    """Tracks a user's active chat subscription."""
     __tablename__ = 'user_subscriptions'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -225,3 +226,18 @@ class UserSubscription(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     auto_renew = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+# ===================== NEW: WITHDRAWALS =====================
+
+class Withdrawal(db.Model):
+    __tablename__ = 'withdrawals'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(50), default='pending')   # pending, approved, rejected
+    payment_method = db.Column(db.String(50))               # mpesa, bank, paypal
+    phone_number = db.Column(db.String(15))
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    processed_at = db.Column(db.DateTime)

@@ -1,82 +1,162 @@
 {% extends "base.html" %}
 {% block title %}Chat – RemoteHub{% endblock %}
 
-{% block content %}
-<div class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Back link -->
-    <a href="{{ url_for('chat.list_conversations') }}" class="text-green-600 hover:underline text-sm mb-4 inline-block">
-        &larr; Back to conversations
-    </a>
+{% block extra_head %}
+<style>
+    .chat-bubble-in {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 1.2rem 1.2rem 1.2rem 0.3rem;
+    }
+    .chat-bubble-out {
+        background: #dcf8c6;
+        border-radius: 1.2rem 1.2rem 0.3rem 1.2rem;
+    }
+    .message-container {
+        scroll-behavior: smooth;
+    }
+    .emoji-picker {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        padding: 8px;
+        z-index: 10;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .emoji-picker.show {
+        display: grid;
+    }
+    .emoji-item {
+        cursor: pointer;
+        font-size: 1.4rem;
+        text-align: center;
+        padding: 4px;
+        border-radius: 8px;
+        transition: background 0.2s;
+    }
+    .emoji-item:hover {
+        background: #f3f4f6;
+    }
+</style>
+{% endblock %}
 
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-4 flex flex-col h-[calc(100vh-8rem)]">
     <!-- Header -->
-    <div class="glass-card rounded-xl p-4 mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-xl font-bold text-gray-800">
-                {% if conversation.job %}{{ conversation.job.title }}{% else %}Chat{% endif %}
-            </h1>
-            <p class="text-sm text-gray-500">
-                With {{ conversation.admin.full_name if conversation.admin else 'Support' }}
-            </p>
+    <div class="bg-white rounded-t-2xl p-4 shadow-sm border border-gray-100 flex items-center space-x-3">
+        <a href="{{ url_for('chat.list_conversations') }}" class="text-green-600 hover:underline text-sm">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        </a>
+        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold">
+            {{ conversation.admin.full_name[:1] if conversation.admin else 'S' }}
         </div>
-        {% if not current_user.is_admin %}
-        <span class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full">
-            {{ messages|length }} messages
-        </span>
-        {% endif %}
+        <div>
+            <h3 class="font-semibold text-gray-800">
+                {% if conversation.job %}{{ conversation.job.title }}{% else %}Support{% endif %}
+            </h3>
+            <p class="text-xs text-gray-400">Online</p>
+        </div>
     </div>
 
     <!-- Messages -->
-    <div class="space-y-4 mb-6" id="message-container">
+    <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 message-container" id="message-box">
+        {% if assigned_plan and not proxy_purchased %}
+        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-medium text-yellow-800">🔒 Proxy Required</p>
+                    <p class="text-sm text-yellow-700">Admin assigned you the <strong>{{ assigned_plan.name }}</strong> plan (${{ "%.2f"|format(assigned_plan.price) }}). Purchase to continue chatting.</p>
+                </div>
+                <a href="{{ url_for('proxy.purchase', plan_id=assigned_plan.id) }}?conv_id={{ conversation.id }}" 
+                   class="ml-4 bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 whitespace-nowrap">
+                    Buy Now
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
         {% for msg in messages %}
         <div class="flex {% if msg.sender_id == current_user.id %}justify-end{% else %}justify-start{% endif %}">
-            <div class="max-w-[70%] p-3 rounded-xl 
-                {% if msg.sender_id == current_user.id %}
-                    bg-green-100 text-gray-800
-                {% else %}
-                    bg-white border border-gray-200 text-gray-800
-                {% endif %}">
-                <p class="text-sm whitespace-pre-wrap">{{ msg.content }}</p>
+            <div class="max-w-[75%] p-3 {% if msg.sender_id == current_user.id %}chat-bubble-out{% else %}chat-bubble-in{% endif %}">
+                {% if msg.content %}
+                <p class="text-sm whitespace-pre-wrap break-words">{{ msg.content }}</p>
+                {% endif %}
                 {% if msg.attachment %}
-                <div class="mt-2">
-                    <a href="{{ url_for('static', filename=msg.attachment) }}" target="_blank" class="text-green-600 text-xs underline">
-                        📎 Attachment
+                <div class="mt-1">
+                    {% if msg.attachment.endswith(('.png','.jpg','.jpeg','.gif')) %}
+                    <img src="{{ url_for('static', filename=msg.attachment) }}" class="max-w-full rounded-lg max-h-60 object-cover" alt="attachment">
+                    {% else %}
+                    <a href="{{ url_for('static', filename=msg.attachment) }}" target="_blank" class="text-green-600 text-sm underline flex items-center gap-1">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        {{ msg.attachment.split('/')[-1] }}
                     </a>
+                    {% endif %}
                 </div>
                 {% endif %}
-                <span class="text-xs text-gray-400 mt-1 block">
-                    {{ msg.timestamp.strftime('%H:%M') }}
-                </span>
+                <span class="text-xs text-gray-400 mt-1 block text-right">{{ msg.timestamp.strftime('%H:%M') }}</span>
             </div>
         </div>
         {% endfor %}
     </div>
 
-    <!-- Free message limit warning (for non‑admin users) -->
-    {% if messages|length >= 5 and not current_user.is_admin %}
-        {% set sub = get_active_subscription(current_user.id) %}
-        {% if not sub %}
-        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4 text-sm text-yellow-800">
-            You have reached the free message limit. 
-            <a href="{{ url_for('chat.subscribe') }}" class="font-semibold underline">Subscribe for $20/month</a> to continue chatting.
+    <!-- Input Area -->
+    <div class="bg-white border-t border-gray-200 p-3 relative">
+        <!-- Emoji Picker -->
+        <div class="emoji-picker" id="emoji-picker">
+            {% set emojis = ['😀','😂','😍','😢','😡','👍','👎','🎉','❤️','🔥','😊','🙏','💪','🤔','😎','👋','🤗','😇','🤩','😴','😉','😋','🤐','🤑','🤯','😤','😱','🤡','💩','👻'] %}
+            {% for emoji in emojis %}
+            <span class="emoji-item" onclick="insertEmoji('{{ emoji }}')">{{ emoji }}</span>
+            {% endfor %}
         </div>
-        {% endif %}
-    {% endif %}
 
-    <!-- Send Message Form -->
-    <form method="POST" enctype="multipart/form-data" class="glass-card rounded-xl p-4 flex flex-col sm:flex-row gap-3">
-        <div class="flex-1">
-            <textarea name="message" rows="2" placeholder="Type your message..." 
-                      class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"></textarea>
-            <div class="flex items-center gap-3 mt-2">
-                <label class="text-xs text-gray-500 cursor-pointer hover:text-green-600">
-                    <input type="file" name="attachment" class="hidden">
-                    📎 Attach file
-                </label>
+        <form method="POST" enctype="multipart/form-data" class="flex items-end gap-2">
+            <button type="button" onclick="toggleEmojiPicker()" class="text-gray-500 hover:text-green-600 p-2">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </button>
+            <label class="text-gray-500 hover:text-green-600 p-2 cursor-pointer">
+                <input type="file" name="attachment" class="hidden" onchange="this.form.submit()">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+            </label>
+            <div class="flex-1 relative">
+                <textarea name="message" id="message-input" rows="1" 
+                          placeholder="{% if assigned_plan and not proxy_purchased %}Purchase proxy to chat{% else %}Type a message...{% endif %}" 
+                          class="w-full border border-gray-300 rounded-full px-4 py-3 pr-10 focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none text-sm"
+                          {% if assigned_plan and not proxy_purchased %}disabled{% endif %}
+                          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit();}"></textarea>
             </div>
-        </div>
-        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 font-medium self-end">
-            Send
-        </button>
-    </form>
+            <button type="submit" class="bg-green-600 text-white rounded-full p-3 hover:bg-green-700 transition">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+        </form>
+    </div>
 </div>
+
+<script>
+    const msgBox = document.getElementById('message-box');
+    if(msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+
+    function toggleEmojiPicker() {
+        document.getElementById('emoji-picker').classList.toggle('show');
+    }
+    function insertEmoji(emoji) {
+        const input = document.getElementById('message-input');
+        input.value += emoji;
+        input.focus();
+        document.getElementById('emoji-picker').classList.remove('show');
+    }
+    document.addEventListener('click', function(e) {
+        const picker = document.getElementById('emoji-picker');
+        if (picker && !picker.contains(e.target) && e.target.closest('button')?.getAttribute('onclick') !== 'toggleEmojiPicker()') {
+            picker.classList.remove('show');
+        }
+    });
+</script>
 {% endblock %}
