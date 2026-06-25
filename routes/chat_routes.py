@@ -13,8 +13,8 @@ MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def create_notification(user_id, message, notif_type='chat'):
-    notif = Notification(user_id=user_id, message=message, type=notif_type)
+def create_notification(user_id, message, notif_type='chat', related_id=None):
+    notif = Notification(user_id=user_id, message=message, type=notif_type, related_id=related_id)
     db.session.add(notif)
     db.session.commit()
 
@@ -94,7 +94,9 @@ def view_conversation(conv_id):
         conv.updated_at = datetime.now(timezone.utc)
         db.session.commit()
 
-        create_notification(receiver_id, f'New message from {current_user.username}', 'chat')
+        # Customize sender name in notification: "employer" for admin, otherwise the username
+        sender_name = "employer" if current_user.is_admin else current_user.username
+        create_notification(receiver_id, f'New message from {sender_name}', 'chat', related_id=conv.id)
         flash('Message sent.', 'success')
         return redirect(url_for('chat.view_conversation', conv_id=conv.id))
 
