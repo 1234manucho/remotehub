@@ -144,7 +144,7 @@
             <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center">
                 <div class="text-sm text-gray-500 mb-2">Available Balance</div>
                 <div class="text-2xl font-bold text-green-700 mb-3">${{ "%.2f"|format(applications * 20.0) }}</div>
-                <button onclick="alert('Withdrawal feature coming soon!')" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 text-sm font-medium transition">
+                <button onclick="openWithdrawModal()" class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 text-sm font-medium transition">
                     Withdraw Funds
                 </button>
             </div>
@@ -175,7 +175,30 @@
     </div>
 </div>
 
+<!-- Withdraw Modal -->
+<div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">Request Withdrawal</h2>
+        <form method="POST" action="{{ url_for('withdraw.request_withdrawal') }}">
+            <div class="mb-3">
+                <label class="block text-sm font-medium text-gray-700">Amount (USDT)</label>
+                <input type="number" step="0.01" name="amount" required class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Your TRC20 Wallet</label>
+                <input type="text" name="wallet" required placeholder="Wallet address" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <input type="hidden" name="method" value="trc20">
+            <div class="flex gap-3">
+                <button type="button" onclick="closeWithdrawModal()" class="flex-1 border border-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
+                <button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    // Tabs
     (function() {
         const tabs = document.querySelectorAll('.tab-btn');
         const contents = document.querySelectorAll('.tab-content');
@@ -192,5 +215,13 @@
             });
         });
     })();
+
+    // Withdraw modal
+    function openWithdrawModal() {
+        document.getElementById('withdrawModal').classList.remove('hidden');
+    }
+    function closeWithdrawModal() {
+        document.getElementById('withdrawModal').classList.add('hidden');
+    }
 </script>
 {% endblock %}
