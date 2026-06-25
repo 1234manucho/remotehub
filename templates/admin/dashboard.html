@@ -2,25 +2,70 @@
 {% block title %}Admin Dashboard – RemoteHub{% endblock %}
 
 {% block content %}
-<div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="w-64 bg-gray-900 text-gray-300 p-5 hidden md:block">
-        <h2 class="text-xl font-bold text-green-400 mb-6">Admin Panel</h2>
-        <nav class="space-y-2">
-            <a href="{{ url_for('admin.dashboard') }}" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">Dashboard</a>
-            <a href="{{ url_for('admin.manage_jobs') }}" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">Manage Jobs</a>
-            <a href="{{ url_for('admin.manage_users') }}" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">Manage Users</a>
-            <a href="{{ url_for('admin.manage_proxy_plans') }}" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">Proxy Plans</a>
-            <a href="{{ url_for('admin.manage_conversations') }}" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">Conversations</a>
+<div class="flex min-h-screen bg-gray-50">
+    <!-- Sidebar (collapsible on mobile) -->
+    <aside id="sidebar" class="w-64 bg-gray-900 text-gray-300 p-5 fixed md:sticky top-0 left-0 h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-green-400">Admin Panel</h2>
+            <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-white">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <nav class="space-y-1">
+            <a href="{{ url_for('admin.dashboard') }}" class="flex items-center px-3 py-2 rounded-lg bg-gray-800 text-green-400 font-medium">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Dashboard
+            </a>
+            <a href="{{ url_for('admin.manage_jobs') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Manage Jobs
+            </a>
+            <a href="{{ url_for('admin.manage_users') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Manage Users
+            </a>
+            <a href="{{ url_for('admin.manage_proxy_plans') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Proxy Plans
+            </a>
+            <a href="{{ url_for('admin.manage_conversations') }}" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-800 transition font-medium">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Conversations
+            </a>
         </nav>
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 p-6 bg-gray-50">
+    <div class="flex-1 p-6 md:ml-0">
+        <!-- Mobile menu button -->
+        <button id="open-sidebar" class="md:hidden mb-4 text-gray-600">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
         
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+        <!-- Earnings Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <p class="text-sm text-gray-500">Total Revenue</p>
+                <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(total_earnings) }}</p>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <p class="text-sm text-gray-500">Proxy Earnings</p>
+                <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(proxy_earnings) }}</p>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <p class="text-sm text-gray-500">Chat Earnings</p>
+                <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(chat_earnings) }}</p>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <p class="text-sm text-gray-500">Completed Payments</p>
+                <p class="text-2xl font-bold text-green-700">{{ total_payments }}</p>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-white rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Total Users</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_users }}</p>
@@ -34,35 +79,57 @@
                 <p class="text-2xl font-bold text-green-700">{{ total_proxy_plans }}</p>
             </div>
             <div class="bg-white rounded-xl p-4 shadow-sm">
-                <p class="text-sm text-gray-500">Payments</p>
-                <p class="text-2xl font-bold text-green-700">{{ total_payments }}</p>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Conversations</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_conversations }}</p>
             </div>
         </div>
 
-        <!-- Recent Users & Jobs -->
-        <div class="grid md:grid-cols-2 gap-6">
-            <div class="bg-white rounded-xl p-5 shadow-sm">
+        <!-- Revenue Chart -->
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+            <h3 class="font-semibold text-gray-800 mb-4">Revenue (Last 7 Days)</h3>
+            <div class="h-40 flex items-end space-x-2">
+                {% for i in range(7) %}
+                <div class="flex-1 bg-green-100 rounded-t-md" style="height: {{ (chart_data[i] / (chart_data|max or 1)) * 100 }}%;"></div>
+                {% endfor %}
+            </div>
+            <div class="flex justify-between text-xs text-gray-400 mt-2">
+                {% for label in chart_labels %}
+                <span>{{ label }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                 <h3 class="font-semibold text-gray-800 mb-4">Recent Users</h3>
                 <ul class="space-y-2">
                     {% for user in recent_users %}
                     <li class="flex justify-between text-sm">
                         <span>{{ user.username }}</span>
-                        <span class="text-gray-400">{{ user.created_at.strftime('%b %d, %Y') }}</span>
+                        <span class="text-gray-400">{{ user.created_at.strftime('%b %d') }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
                 <h3 class="font-semibold text-gray-800 mb-4">Recent Jobs</h3>
                 <ul class="space-y-2">
                     {% for job in recent_jobs %}
                     <li class="flex justify-between text-sm">
-                        <span>{{ job.title }}</span>
-                        <span class="text-gray-400">{{ job.posted_date.strftime('%b %d, %Y') }}</span>
+                        <span>{{ job.title[:25] }}{% if job.title|length > 25 %}…{% endif %}</span>
+                        <span class="text-gray-400">{{ job.posted_date.strftime('%b %d') }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+                <h3 class="font-semibold text-gray-800 mb-4">Recent Payments</h3>
+                <ul class="space-y-2">
+                    {% for pay in recent_payments %}
+                    <li class="flex justify-between text-sm">
+                        <span>${{ "%.2f"|format(pay.amount) }} – {{ pay.user.username }}</span>
+                        <span class="text-gray-400">{{ pay.completed_at.strftime('%b %d') }}</span>
                     </li>
                     {% endfor %}
                 </ul>
@@ -70,4 +137,15 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Mobile sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    document.getElementById('open-sidebar')?.addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+    });
+    document.getElementById('close-sidebar')?.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+    });
+</script>
 {% endblock %}

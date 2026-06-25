@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
-from models import db, User, Job, ProxyPlan, Payment, Conversation
+from models import UserSubscription, db, User, Job, ProxyPlan, Payment, Conversation
 from datetime import datetime, timezone
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -16,18 +16,45 @@ def admin_required(func):
             return redirect(url_for('main.home'))
         return func(*args, **kwargs)
     return wrapper
+from sqlalchemy import func
 
-# ==================== DASHBOARD ====================
 @admin_bp.route('/')
 @admin_required
 def dashboard():
     total_users = User.query.count()
-    total_jobs = Job.query.count()
-    total_proxy_plans = ProxyPlan.query.count()
+    total_jobs = Job.query.filter_by(is_active=True).count()
+    total_proxy_plans = ProxyPlan.query.filter_by(is_active=True).count()
     total_payments = Payment.query.filter_by(status='completed').count()
     total_conversations = Conversation.query.count()
+
+    # Total earnings from proxy payments (completed)
+    proxy_earnings = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
+                      .filter(Payment.status == 'completed').scalar()
+
+    # Chat subscription earnings (from UserSubscription active subscriptions)
+    chat_earnings = db.session.query(func.coalesce(func.sum(UserSubscription.plan_price), 0)) \
+                    .filter(UserSubscription.is_active == True).scalar()
+
+    total_earnings = proxy_earnings + chat_earnings
+
+    # Recent activity
     recent_users = User.query.order_by(User.created_at.desc()).limit(5).all()
     recent_jobs = Job.query.order_by(Job.posted_date.desc()).limit(5).all()
+    recent_payments = Payment.query.filter_by(status='completed') \
+                      .order_by(Payment.completed_at.desc()).limit(5).all()
+
+    # Data for mini chart (last 7 days of payments)
+    from datetime import timedelta
+    chart_labels = []
+    chart_data = []
+    today = datetime.now(timezone.utc).date()
+    for i in range(6, -1, -1):
+        day = today - timedelta(days=i)
+        day_earnings = db.session.query(func.coalesce(func.sum(Payment.amount), 0)) \
+                       .filter(Payment.status == 'completed',
+                               func.date(Payment.completed_at) == day).scalar()
+        chart_labels.append(day.strftime('%a'))
+        chart_data.append(float(day_earnings))
 
     return render_template('admin/dashboard.html',
                            total_users=total_users,
@@ -35,9 +62,14 @@ def dashboard():
                            total_proxy_plans=total_proxy_plans,
                            total_payments=total_payments,
                            total_conversations=total_conversations,
+                           total_earnings=total_earnings,
+                           proxy_earnings=proxy_earnings,
+                           chat_earnings=chat_earnings,
                            recent_users=recent_users,
-                           recent_jobs=recent_jobs)
-
+                           recent_jobs=recent_jobs,
+                           recent_payments=recent_payments,
+                           chart_labels=chart_labels,
+                           chart_data=chart_data)
 # ==================== MANAGE JOBS ====================
 @admin_bp.route('/jobs')
 @admin_required

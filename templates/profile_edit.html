@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile – RemoteHub{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">Edit Profile</h1>
+
+    <form method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+        <!-- Avatar -->
+        <div class="flex items-center space-x-4">
+            <img src="{{ url_for('static', filename=user.avatar or 'images/default-avatar.png') }}" 
+                 alt="Avatar" class="w-16 h-16 rounded-full object-cover border">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Profile Picture</label>
+                <input type="file" name="avatar" accept="image/*" class="mt-1 text-sm text-gray-500">
+            </div>
+        </div>
+
+        <!-- Two-column grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Full Name</label>
+                <input type="text" name="full_name" value="{{ user.full_name or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Location</label>
+                <input type="text" name="location" value="{{ user.location or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Bio</label>
+                <textarea name="bio" rows="3" class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">{{ user.bio or '' }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Skills (comma separated)</label>
+                <input type="text" name="skills" value="{{ user.skills or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Portfolio URL</label>
+                <input type="url" name="portfolio_url" value="{{ user.portfolio_url or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">GitHub</label>
+                <input type="url" name="github_url" value="{{ user.github_url or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">LinkedIn</label>
+                <input type="url" name="linkedin_url" value="{{ user.linkedin_url or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Website</label>
+                <input type="url" name="website" value="{{ user.website or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Languages</label>
+                <input type="text" name="languages" value="{{ user.languages or '' }}" 
+                       class="mt-1 w-full rounded-lg border-gray-300 focus:ring-green-500 focus:border-green-500">
+            </div>
+        </div>
+
+        <!-- Resume Upload -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Resume</label>
+            {% if user.resume_path %}
+            <p class="text-xs text-gray-500">Current: {{ user.resume_path }}</p>
+            {% endif %}
+            <input type="file" name="resume" class="mt-1 text-sm text-gray-500">
+        </div>
+
+        <div class="flex justify-end space-x-3">
+            <a href="{{ url_for('dashboard.overview') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</a>
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-green-700">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
