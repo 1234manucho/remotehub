@@ -66,7 +66,7 @@
             width: 280px;
             max-width: 80vw;
             height: 100%;
-            background: #1f2937; /* gray-800, matches footer */
+            background: #111827; /* gray-900 */
             z-index: 60;
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -123,8 +123,8 @@
 </head>
 <body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-    <!-- ========== NAVBAR ========== -->
-    <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 nav-shadow border-b border-gray-100">
+    <!-- ========== NAVBAR (dark) ========== -->
+    <nav class="bg-gray-900/95 backdrop-blur-md sticky top-0 z-50 shadow-sm border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
@@ -133,18 +133,18 @@
                          alt="RemoteHub Logo" 
                          class="h-8 w-auto"
                          onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%232E7D32\' d=\'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\'/%3E%3C/svg%3E';">
-                    <span class="font-bold text-xl text-green-700">RemoteHub</span>
+                    <span class="font-bold text-xl text-green-400">RemoteHub</span>
                 </a>
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="{{ url_for('main.home') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Home</a>
-                    <a href="{{ url_for('jobs.browse') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Find Jobs</a>
-                    <a href="{{ url_for('proxy.marketplace') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Proxy Market</a>
+                    <a href="{{ url_for('main.home') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Home</a>
+                    <a href="{{ url_for('jobs.browse') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Find Jobs</a>
+                    <a href="{{ url_for('proxy.marketplace') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Proxy Market</a>
                     {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('chat.list_conversations') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Chat</a>
+                        <a href="{{ url_for('chat.list_conversations') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Chat</a>
                         <!-- Notification Bell -->
-                        <a href="{{ url_for('notifications.list_notifications') }}" class="relative text-gray-600 hover:text-green-600 transition">
+                        <a href="{{ url_for('notifications.list_notifications') }}" class="relative text-gray-300 hover:text-green-400 transition">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
                             {% if unread_notifications_count > 0 %}
                             <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{{ unread_notifications_count }}</span>
@@ -152,20 +152,20 @@
                         </a>
                         <!-- Dashboard / Admin -->
                         {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin.dashboard') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Admin</a>
+                            <a href="{{ url_for('admin.dashboard') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Admin</a>
                         {% else %}
-                            <a href="{{ url_for('dashboard.overview') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Dashboard</a>
+                            <a href="{{ url_for('dashboard.overview') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Dashboard</a>
                         {% endif %}
                         <a href="{{ url_for('auth.logout') }}" class="btn-green text-white px-4 py-2 rounded-lg transition">Logout</a>
                     {% else %}
-                        <a href="{{ url_for('auth.login') }}" class="text-gray-600 hover:text-green-600 transition font-medium">Login</a>
+                        <a href="{{ url_for('auth.login') }}" class="text-gray-300 hover:text-green-400 transition font-medium">Login</a>
                         <a href="{{ url_for('auth.register') }}" class="btn-green text-white px-4 py-2 rounded-lg transition">Sign Up</a>
                     {% endif %}
                 </div>
 
                 <!-- Mobile menu button (hamburger) -->
                 <div class="md:hidden">
-                    <button id="menu-toggle" class="text-gray-600 focus:outline-none p-2" aria-label="Open menu">
+                    <button id="menu-toggle" class="text-gray-300 focus:outline-none p-2" aria-label="Open menu">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -178,7 +178,7 @@
     <!-- Sidebar overlay -->
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
-    <!-- Mobile Sidebar -->
+    <!-- Mobile Sidebar (dark) -->
     <aside id="mobile-sidebar" class="mobile-sidebar">
         <button id="sidebar-close" class="sidebar-close" aria-label="Close menu">&times;</button>
         <nav class="mt-8 space-y-1">
@@ -226,7 +226,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- ========== FOOTER ========== -->
+    <!-- ========== FOOTER (dark charcoal) ========== -->
     <footer class="bg-gray-900 text-gray-300 mt-auto">
         <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
