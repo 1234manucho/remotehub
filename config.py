@@ -6,8 +6,13 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-prod'
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'remotehub.db')
+
+    # Use the DATABASE_URL from environment, fallback to SQLite
+    db_url = os.environ.get('DATABASE_URL')
+    if db_url and db_url.startswith('postgres://'):
+        db_url = db_url.replace('postgres://', 'postgresql://', 1)
+    SQLALCHEMY_DATABASE_URI = db_url or ('sqlite:///' + os.path.join(basedir, 'remotehub.db'))
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # TRC20 Crypto Payment Settings
