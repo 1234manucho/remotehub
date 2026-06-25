@@ -156,9 +156,12 @@ class Payment(db.Model):
     transaction_id = db.Column(db.String(100), unique=True)
     payhero_reference = db.Column(db.String(100), unique=True, nullable=True)
     proxy_purchase_id = db.Column(db.Integer, db.ForeignKey('proxy_purchases.id'))
-    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=True)   # NEW
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversations.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = db.Column(db.DateTime)
+
+    user = db.relationship('User', backref='payments')
+    plan = db.relationship('ProxyPlan', backref='payments')
 
 
 class ActivityLog(db.Model):
@@ -172,14 +175,13 @@ class ActivityLog(db.Model):
 # ===================== CHAT & SUBSCRIPTION =====================
 
 class Conversation(db.Model):
-    """A conversation between a user and an admin/employer about a specific job."""
     __tablename__ = 'conversations'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     admin_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     job_id = db.Column(db.Integer, db.ForeignKey('jobs.id'), nullable=True)
-    assigned_proxy_plan_id = db.Column(db.Integer, db.ForeignKey('proxy_plans.id'), nullable=True)   # NEW
-    proxy_purchase_id = db.Column(db.Integer, db.ForeignKey('proxy_purchases.id'), nullable=True)   # NEW
+    assigned_proxy_plan_id = db.Column(db.Integer, db.ForeignKey('proxy_plans.id'), nullable=True)
+    proxy_purchase_id = db.Column(db.Integer, db.ForeignKey('proxy_purchases.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -187,7 +189,7 @@ class Conversation(db.Model):
     admin = db.relationship('User', foreign_keys=[admin_id])
     job = db.relationship('Job')
     messages = db.relationship('Message', backref='conversation', lazy='dynamic', order_by='Message.timestamp')
-    assigned_plan = db.relationship('ProxyPlan', foreign_keys=[assigned_proxy_plan_id])   # NEW
+    assigned_plan = db.relationship('ProxyPlan', foreign_keys=[assigned_proxy_plan_id])
 
 
 class Message(db.Model):
@@ -235,8 +237,8 @@ class Withdrawal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(50), default='pending')   # pending, approved, rejected
-    payment_method = db.Column(db.String(50))               # mpesa, bank, paypal
+    status = db.Column(db.String(50), default='pending')
+    payment_method = db.Column(db.String(50))
     phone_number = db.Column(db.String(15))
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
