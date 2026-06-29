@@ -22,17 +22,7 @@ def mark_read(notif_id):
     notif.is_read = True
     db.session.commit()
     return redirect(url_for('notifications.list_notifications'))
-@notif_bp.route('/dismiss/<int:notif_id>')
-@login_required
-def dismiss(notif_id):
-    notif = Notification.query.get_or_404(notif_id)
-    if notif.user_id != current_user.id:
-        flash('Access denied.', 'danger')
-        return redirect(url_for('notifications.list_notifications'))
-    db.session.delete(notif)
-    db.session.commit()
-    flash('Notification dismissed.', 'success')
-    return redirect(url_for('notifications.list_notifications'))
+
 @notif_bp.route('/read-all')
 @login_required
 def mark_all_read():
