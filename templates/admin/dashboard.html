@@ -2,9 +2,9 @@
 {% block title %}Admin Dashboard – RemoteHub{% endblock %}
 
 {% block content %}
-<div class="flex min-h-screen bg-gray-50">
+<div class="flex min-h-screen" style="background: linear-gradient(135deg, #0a2e0a 0%, #0f3f0f 40%, #1a5c1a 100%);">
     <!-- Sidebar (collapsible on mobile) -->
-    <aside id="sidebar" class="w-64 bg-gray-900 text-gray-300 p-5 fixed md:sticky top-0 left-0 h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200">
+    <aside id="sidebar" class="w-64 bg-gray-900/95 backdrop-blur-md text-gray-300 p-5 fixed md:sticky top-0 left-0 h-full z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 border-r border-gray-700">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-xl font-bold text-green-400">Admin Panel</h2>
             <button id="close-sidebar" class="md:hidden text-gray-400 hover:text-white">
@@ -38,27 +38,27 @@
     <!-- Main Content -->
     <div class="flex-1 p-6 md:ml-0">
         <!-- Mobile menu button -->
-        <button id="open-sidebar" class="md:hidden mb-4 text-gray-600">
+        <button id="open-sidebar" class="md:hidden mb-4 text-gray-300 hover:text-white">
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
 
-        <h1 class="text-2xl font-bold text-gray-800 mb-6">Dashboard Overview</h1>
+        <h1 class="text-2xl font-bold text-white mb-6">Dashboard Overview</h1>
         
         <!-- Earnings Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <p class="text-sm text-gray-500">Total Revenue</p>
                 <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(total_earnings) }}</p>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <p class="text-sm text-gray-500">Proxy Earnings</p>
                 <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(proxy_earnings) }}</p>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <p class="text-sm text-gray-500">Chat Earnings</p>
                 <p class="text-2xl font-bold text-green-700">${{ "%.2f"|format(chat_earnings) }}</p>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <p class="text-sm text-gray-500">Completed Payments</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_payments }}</p>
             </div>
@@ -66,26 +66,26 @@
 
         <!-- Stats Row -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl p-4 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Total Users</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_users }}</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Active Jobs</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_jobs }}</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Proxy Plans</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_proxy_plans }}</p>
             </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
                 <p class="text-sm text-gray-500">Conversations</p>
                 <p class="text-2xl font-bold text-green-700">{{ total_conversations }}</p>
             </div>
         </div>
 
         <!-- Revenue Chart -->
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4">Revenue (Last 7 Days)</h3>
             <div class="h-40 flex items-end space-x-2">
                 {% for i in range(7) %}
@@ -100,7 +100,7 @@
         </div>
 
         <!-- Pending Crypto Payments -->
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4">Pending Crypto Payments</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -136,7 +136,7 @@
         </div>
 
         <!-- Pending Withdrawals -->
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 mb-8">
+        <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4">Pending Withdrawals</h3>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -173,7 +173,7 @@
 
         <!-- Recent Activity -->
         <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <h3 class="font-semibold text-gray-800 mb-4">Recent Users</h3>
                 <ul class="space-y-2">
                     {% for user in recent_users %}
@@ -184,7 +184,7 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <h3 class="font-semibold text-gray-800 mb-4">Recent Jobs</h3>
                 <ul class="space-y-2">
                     {% for job in recent_jobs %}
@@ -195,7 +195,7 @@
                     {% endfor %}
                 </ul>
             </div>
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div class="bg-white/80 backdrop-blur-sm rounded-xl p-5 shadow-sm border border-gray-200">
                 <h3 class="font-semibold text-gray-800 mb-4">Recent Payments</h3>
                 <ul class="space-y-2">
                     {% for pay in recent_payments %}
