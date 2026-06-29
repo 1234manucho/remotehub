@@ -1,42 +1,112 @@
 {% extends "base.html" %}
 {% block title %}Notifications – RemoteHub{% endblock %}
 
+{% block extra_head %}
+<style>
+  .notif-page{
+    min-height: calc(100vh - 80px);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.15), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(0,60,0,.25), transparent 60%),
+      linear-gradient(135deg, #0a2e0a 0%, #0f3f0f 40%, #1a5c1a 100%);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 40px 20px;
+  }
+  .notif-card{
+    width: 100%; max-width: 700px;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+    border: 1px solid rgba(0,0,0,0.05); border-radius: 24px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    padding: 32px;
+  }
+  .notif-header{
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .notif-header h1{
+    font-size: 24px; font-weight: 800; color: #001e00;
+  }
+  .notif-header a{
+    font-size: 14px; font-weight: 600; color: #14a800;
+    text-decoration: none;
+  }
+  .notif-header a:hover{ text-decoration: underline; }
+
+  .notif-list{ display: flex; flex-direction: column; gap: 12px; }
+
+  .notif-item{
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 16px; border-radius: 16px;
+    background: #fff; border: 1px solid #e4ebe4;
+    transition: all 0.2s; text-decoration: none; color: inherit;
+  }
+  .notif-item:hover{
+    transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,30,0,0.06);
+  }
+  .notif-item.unread{
+    border-left: 4px solid #14a800;
+    background: #f6fdf6;
+  }
+  .notif-icon{
+    font-size: 20px; width: 40px; height: 40px;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    background: #e4f5e1; color: #14a800; flex-shrink: 0;
+  }
+  .notif-body{ flex: 1; min-width: 0; }
+  .notif-body p{ font-size: 14px; color: #3c4043; margin: 0 0 4px; line-height: 1.4; }
+  .notif-body .time{ font-size: 12px; color: #8fa08a; }
+  .notif-badge{
+    background: #14a800; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px; flex-shrink: 0;
+  }
+
+  .empty-state{
+    text-align: center; padding: 40px 20px; color: #5e6d55;
+  }
+  .empty-state .icon{ font-size: 48px; margin-bottom: 16px; opacity: 0.6; }
+
+  @media (max-width: 480px){
+    .notif-card{ padding: 20px; }
+    .notif-header h1{ font-size: 20px; }
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Notifications</h1>
-        {% if unread_count > 0 %}
-        <a href="{{ url_for('notifications.mark_all_read') }}" class="text-sm text-green-600 hover:underline font-medium">Mark all as read</a>
-        {% endif %}
+<div class="notif-page">
+  <div class="notif-card">
+    <div class="notif-header">
+      <h1>Notifications</h1>
+      {% if unread_count > 0 %}
+      <a href="{{ url_for('notifications.mark_all_read') }}">Mark all as read</a>
+      {% endif %}
     </div>
 
     {% if notifications %}
-    <div class="space-y-3">
-        {% for n in notifications %}
-        <a href="{% if n.type == 'chat' and n.related_id %}{{ url_for('chat.view_conversation', conv_id=n.related_id) }}{% else %}#{% endif %}"
-           class="block glass-card rounded-xl p-4 flex items-start gap-3 transition hover:shadow-md {% if not n.is_read %}border-l-4 border-green-500{% endif %}">
-            <span class="text-lg mt-1">
-                {% if n.type == 'chat' %}💬
-                {% elif n.type == 'subscription' %}⭐
-                {% elif n.type == 'job_alert' %}📌
-                {% else %}🔔{% endif %}
-            </span>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm text-gray-800 {% if not n.is_read %}font-semibold{% endif %}">{{ n.message }}</p>
-                <span class="text-xs text-gray-400">{{ n.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
-            </div>
-            {% if not n.is_read %}
-            <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">New</span>
-            {% endif %}
-        </a>
-        {% endfor %}
+    <div class="notif-list">
+      {% for n in notifications %}
+      <a href="{% if n.type == 'chat' and n.related_id %}{{ url_for('chat.view_conversation', conv_id=n.related_id) }}{% else %}#{% endif %}"
+         class="notif-item {% if not n.is_read %}unread{% endif %}">
+        <div class="notif-icon">
+          {% if n.type == 'chat' %}💬{% elif n.type == 'subscription' %}⭐{% elif n.type == 'job_alert' %}📌{% else %}🔔{% endif %}
+        </div>
+        <div class="notif-body">
+          <p>{{ n.message }}</p>
+          <span class="time">{{ n.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+        </div>
+        {% if not n.is_read %}
+        <span class="notif-badge">New</span>
+        {% endif %}
+      </a>
+      {% endfor %}
     </div>
     {% else %}
-    <div class="text-center py-16">
-        <div class="text-5xl mb-4">🔔</div>
-        <p class="text-gray-400 text-lg">No notifications yet.</p>
-        <p class="text-gray-400 text-sm mt-1">When you receive messages or updates, they'll appear here.</p>
+    <div class="empty-state">
+      <div class="icon">🔔</div>
+      <h3>No notifications yet</h3>
+      <p>When you receive messages or updates, they'll appear here.</p>
     </div>
     {% endif %}
+  </div>
 </div>
 {% endblock %}
