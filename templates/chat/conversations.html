@@ -28,22 +28,15 @@
     font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
     color:var(--rh-text);
     -webkit-font-smoothing:antialiased;
+    /* ===== MATCH LOGIN PAGE BACKGROUND ===== */
     background:
-      radial-gradient(1200px 600px at -10% -20%, rgba(20,168,0,.10), transparent 60%),
-      radial-gradient(900px 500px at 110% 10%, rgba(20,168,0,.08), transparent 55%),
-      radial-gradient(700px 700px at 50% 120%, rgba(20,168,0,.06), transparent 60%),
-      linear-gradient(180deg,#f7fbf6 0%, #eef6ec 100%);
+      radial-gradient(1200px 600px at 80% -10%, rgba(20,168,0,.15), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(0,60,0,.25), transparent 60%),
+      linear-gradient(135deg, #0a2e0a 0%, #0f3f0f 40%, #1a5c1a 100%);
     min-height:100vh;
     position:relative;
   }
-  body::before{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
-    background-image:
-      radial-gradient(circle at 1px 1px, rgba(0,30,0,.05) 1px, transparent 0);
-    background-size:22px 22px;
-    mask-image:radial-gradient(ellipse at center, #000 40%, transparent 75%);
-    opacity:.6;
-  }
+  /* Removed the dot pattern overlay to match the login page exactly */
 
   /* ===== TOP NAV ===== */
   .rh-nav{
@@ -91,16 +84,14 @@
     margin-bottom:20px;flex-wrap:wrap;
   }
   .rh-page-title{
-    font-size:30px;font-weight:800;color:var(--rh-ink);letter-spacing:-.025em;
+    font-size:30px;font-weight:800;color:#ffffff;letter-spacing:-.025em;
     display:flex;align-items:center;gap:12px;
   }
   .rh-page-title .dot{
     width:8px;height:8px;border-radius:50%;background:var(--rh-green);
     box-shadow:0 0 0 4px rgba(20,168,0,.18);
   }
-  .rh-page-sub{
-    font-size:14.5px;color:var(--rh-muted);margin-top:6px;
-  }
+  .rh-page-sub{font-size:14.5px;color:rgba(255,255,255,0.7);margin-top:6px;}
   .rh-stats{
     display:flex;gap:10px;flex-wrap:wrap;
   }
