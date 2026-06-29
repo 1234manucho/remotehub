@@ -6,295 +6,457 @@
   :root{
     --rh-green:#14a800;
     --rh-green-dark:#108a00;
-    --rh-green-soft:#e4f5e1;
+    --rh-green-darker:#0a5e00;
+    --rh-green-soft:#d8efd2;
     --rh-green-50:#f0fdf0;
+    --rh-green-100:#e4f5e1;
     --rh-ink:#001e00;
     --rh-text:#3c4043;
     --rh-muted:#5e6d55;
     --rh-line:#e4ebe4;
+    --rh-line-light:#f0f5f0;
     --rh-bg:#ffffff;
-    --rh-bg-soft:#f7faf7;
-    --rh-shadow:0 2px 12px rgba(0,30,0,.06);
-    --rh-shadow-lg:0 8px 32px rgba(0,30,0,.10);
-    --rh-radius:16px;
+    --rh-bg-soft:#f6faf5;
+    --rh-shadow-sm:0 1px 2px rgba(0,30,0,.04);
+    --rh-shadow:0 4px 20px rgba(0,30,0,.06);
+    --rh-shadow-lg:0 20px 50px rgba(0,30,0,.10);
   }
+
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--rh-text);background:var(--rh-bg-soft);-webkit-font-smoothing:antialiased;}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--rh-text);
+    -webkit-font-smoothing:antialiased;
+    background:
+      radial-gradient(1200px 600px at -10% -20%, rgba(20,168,0,.10), transparent 60%),
+      radial-gradient(900px 500px at 110% 10%, rgba(20,168,0,.08), transparent 55%),
+      radial-gradient(700px 700px at 50% 120%, rgba(20,168,0,.06), transparent 60%),
+      linear-gradient(180deg,#f7fbf6 0%, #eef6ec 100%);
+    min-height:100vh;
+    position:relative;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0,30,0,.05) 1px, transparent 0);
+    background-size:22px 22px;
+    mask-image:radial-gradient(ellipse at center, #000 40%, transparent 75%);
+    opacity:.6;
+  }
 
-  /* Top bar removed – we use base.html’s navbar now */
+  /* ===== TOP NAV ===== */
+  .rh-nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:saturate(180%) blur(14px);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(0,30,0,.06);
+  }
+  .rh-nav-inner{
+    max-width:1200px;margin:0 auto;padding:0 24px;
+    display:flex;align-items:center;justify-content:space-between;height:64px;
+  }
+  .rh-nav-brand{
+    display:flex;align-items:center;gap:10px;
+    font-weight:800;font-size:18px;color:var(--rh-ink);text-decoration:none;letter-spacing:-.01em;
+  }
+  .rh-nav-brand i{
+    width:36px;height:36px;border-radius:11px;
+    background:linear-gradient(135deg,var(--rh-green-dark),var(--rh-green));
+    color:#fff;display:grid;place-items:center;font-size:15px;
+    box-shadow:0 6px 16px rgba(20,168,0,.30);
+  }
+  .rh-nav-links{display:flex;align-items:center;gap:22px}
+  .rh-nav-links a{
+    color:var(--rh-text);text-decoration:none;font-size:14px;font-weight:600;
+    display:inline-flex;align-items:center;gap:6px;transition:color .15s;
+  }
+  .rh-nav-links a:hover{color:var(--rh-green-dark);}
+  .rh-nav-avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:linear-gradient(135deg,var(--rh-green-dark),var(--rh-green));
+    color:#fff;display:grid;place-items:center;font-size:14px;font-weight:700;
+    box-shadow:0 4px 12px rgba(20,168,0,.30);border:2px solid #fff;
+  }
+  @media (max-width:640px){.rh-nav-links{display:none}}
 
-  .rh-msg-layout{
-    max-width:1100px;margin:24px auto;
-    display:grid;grid-template-columns:340px 1fr;
-    min-height:calc(100vh - 120px);
+  /* ===== PAGE WRAP ===== */
+  .rh-wrap{
+    position:relative;z-index:1;
+    max-width:1200px;margin:0 auto;padding:28px 24px 40px;
+  }
+  .rh-page-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    margin-bottom:20px;flex-wrap:wrap;
+  }
+  .rh-page-title{
+    font-size:30px;font-weight:800;color:var(--rh-ink);letter-spacing:-.025em;
+    display:flex;align-items:center;gap:12px;
+  }
+  .rh-page-title .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--rh-green);
+    box-shadow:0 0 0 4px rgba(20,168,0,.18);
+  }
+  .rh-page-sub{
+    font-size:14.5px;color:var(--rh-muted);margin-top:6px;
+  }
+  .rh-stats{
+    display:flex;gap:10px;flex-wrap:wrap;
+  }
+  .rh-stat{
+    background:rgba(255,255,255,.85);backdrop-filter:blur(8px);
     border:1px solid var(--rh-line);
-    border-radius:20px;
-    overflow:hidden;
-    background:#fff;
-    box-shadow:var(--rh-shadow);
+    padding:10px 14px;border-radius:12px;
+    display:flex;align-items:center;gap:10px;
+    box-shadow:var(--rh-shadow-sm);
+  }
+  .rh-stat i{
+    width:32px;height:32px;border-radius:8px;display:grid;place-items:center;
+    background:var(--rh-green-50);color:var(--rh-green-dark);font-size:13px;
+  }
+  .rh-stat b{color:var(--rh-ink);font-size:15px;font-weight:800;display:block;line-height:1.1;}
+  .rh-stat span{font-size:11.5px;color:var(--rh-muted);font-weight:500;}
+
+  /* ===== LAYOUT ===== */
+  .rh-msg-layout{
+    display:grid;grid-template-columns:360px 1fr;
+    min-height:72vh;
+    border:1px solid var(--rh-line);
+    border-radius:24px;overflow:hidden;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px);
+    box-shadow:var(--rh-shadow-lg);
   }
 
   /* ===== SIDEBAR ===== */
   .rh-sidebar{
-    background:#fff;
+    background:linear-gradient(180deg,#ffffff 0%, #fbfdfa 100%);
     border-right:1px solid var(--rh-line);
-    display:flex;flex-direction:column;
-    overflow:hidden;
+    display:flex;flex-direction:column;overflow:hidden;
   }
-  .rh-sidebar-head{
-    padding:22px 20px 14px;
+  .rh-sidebar-head{padding:22px 20px 12px;}
+  .rh-sidebar-head h2{
+    font-size:18px;font-weight:800;color:var(--rh-ink);
+    display:flex;align-items:center;gap:10px;letter-spacing:-.01em;
   }
-  .rh-sidebar-head h1{
-    font-size:22px;font-weight:800;color:var(--rh-ink);letter-spacing:-.02em;
+  .rh-sidebar-head h2 .pill{
+    background:var(--rh-green);color:#fff;font-size:11px;font-weight:700;
+    padding:2px 8px;border-radius:20px;
   }
-  .rh-sidebar-head p{
-    font-size:13px;color:var(--rh-muted);margin-top:4px;
+  .rh-sidebar-head p{font-size:12.5px;color:var(--rh-muted);margin-top:4px;}
+
+  .rh-filters{
+    display:flex;gap:6px;padding:0 20px 12px;flex-wrap:wrap;
   }
-  .rh-search-box{
-    position:relative;margin:0 20px 12px;
+  .rh-filter{
+    font-size:12px;font-weight:600;color:var(--rh-muted);
+    padding:6px 12px;border-radius:20px;cursor:pointer;
+    border:1px solid var(--rh-line);background:#fff;transition:.15s;
   }
+  .rh-filter.active,.rh-filter:hover{
+    background:var(--rh-green);color:#fff;border-color:var(--rh-green);
+  }
+
+  .rh-search-box{position:relative;margin:0 20px 12px;}
   .rh-search-box i{
-    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    position:absolute;left:13px;top:50%;transform:translateY(-50%);
     color:var(--rh-muted);font-size:13px;
   }
   .rh-search-box input{
-    width:100%;padding:10px 12px 10px 36px;
-    border:1.5px solid var(--rh-line);
-    border-radius:12px;
+    width:100%;padding:11px 12px 11px 38px;
+    border:1.5px solid var(--rh-line);border-radius:12px;
     font-size:14px;font-family:inherit;color:var(--rh-ink);
     background:var(--rh-bg-soft);transition:.2s;
   }
   .rh-search-box input:focus{
-    outline:none;
-    border-color:var(--rh-green);
-    box-shadow:0 0 0 3px rgba(20,168,0,.10);
-    background:#fff;
+    outline:none;border-color:var(--rh-green);
+    box-shadow:0 0 0 4px rgba(20,168,0,.12);background:#fff;
   }
   .rh-search-box input::placeholder{color:#95a89a;}
 
-  .rh-conv-list{
-    flex:1;overflow-y:auto;
-    padding:0 12px 16px;
-  }
-  .rh-conv-list::-webkit-scrollbar{width:5px;}
-  .rh-conv-list::-webkit-scrollbar-thumb{
-    background:#d0ddd0;border-radius:4px;
-  }
+  .rh-conv-list{flex:1;overflow-y:auto;padding:4px 12px 16px;}
+  .rh-conv-list::-webkit-scrollbar{width:6px;}
+  .rh-conv-list::-webkit-scrollbar-thumb{background:#cfdccf;border-radius:4px;}
+  .rh-conv-list::-webkit-scrollbar-thumb:hover{background:#b6c7b6;}
 
   .rh-conv-item{
     display:flex;align-items:flex-start;gap:12px;
-    padding:12px 10px;border-radius:14px;
-    cursor:pointer;transition:background .15s, transform .1s;
-    border:1px solid transparent;
-    position:relative;text-decoration:none;
+    padding:12px 12px;border-radius:14px;
+    cursor:pointer;transition:all .18s ease;
+    border:1px solid transparent;text-decoration:none;
+    margin-bottom:2px;
   }
   .rh-conv-item:hover{
-    background:var(--rh-bg-soft);
-    transform:translateX(2px);
+    background:#fff;border-color:var(--rh-line);
+    transform:translateY(-1px);box-shadow:var(--rh-shadow-sm);
   }
   .rh-conv-item.active{
-    background:var(--rh-green-50);
+    background:linear-gradient(135deg,var(--rh-green-50),#fff);
     border-color:var(--rh-green-soft);
+    box-shadow:var(--rh-shadow-sm);
   }
+  .rh-conv-item.active::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;
+    background:var(--rh-green);border-radius:0 3px 3px 0;
+  }
+  .rh-conv-item{position:relative;}
 
   .rh-conv-avatar{
-    width:46px;height:46px;border-radius:50%;
-    flex-shrink:0;display:grid;place-items:center;
-    font-size:16px;font-weight:700;color:#fff;
-    position:relative;
+    width:48px;height:48px;border-radius:14px;flex-shrink:0;
+    display:grid;place-items:center;font-size:17px;font-weight:700;color:#fff;
+    position:relative;box-shadow:0 4px 12px rgba(0,30,0,.10);
   }
   .rh-conv-avatar::after{
-    content:"";position:absolute;right:1px;bottom:1px;
-    width:11px;height:11px;background:#22c55e;
-    border:2px solid #fff;border-radius:50%;
+    content:"";position:absolute;right:-2px;bottom:-2px;width:13px;height:13px;
+    background:#22c55e;border:2.5px solid #fff;border-radius:50%;
   }
 
   .rh-conv-body{flex:1;min-width:0;}
   .rh-conv-row{
-    display:flex;align-items:center;
-    justify-content:space-between;gap:8px;
-    margin-bottom:4px;
+    display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px;
   }
   .rh-conv-name{
     font-size:14.5px;font-weight:700;color:var(--rh-ink);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   }
-  .rh-conv-time{
-    font-size:11.5px;color:#8fa08a;flex-shrink:0;font-weight:500;
-  }
-  .rh-conv-row2{
-    display:flex;align-items:center;
-    justify-content:space-between;gap:8px;
-  }
+  .rh-conv-time{font-size:11.5px;color:#8fa08a;flex-shrink:0;font-weight:500;}
+  .rh-conv-row2{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .rh-conv-msg{
-    font-size:13.5px;color:var(--rh-muted);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    line-height:1.4;
+    font-size:13px;color:var(--rh-muted);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4;
   }
   .rh-conv-badge{
-    flex-shrink:0;background:var(--rh-green);
-    color:#fff;font-size:11px;font-weight:700;
-    min-width:20px;height:20px;border-radius:50%;
-    display:grid;place-items:center;padding:0 6px;
+    flex-shrink:0;background:var(--rh-green);color:#fff;
+    font-size:11px;font-weight:700;min-width:20px;height:20px;
+    border-radius:20px;display:grid;place-items:center;padding:0 6px;
+    box-shadow:0 2px 6px rgba(20,168,0,.35);
   }
   .rh-conv-tag{
-    display:inline-flex;align-items:center;gap:4px;
-    font-size:11.5px;font-weight:600;
-    color:var(--rh-green);background:var(--rh-green-50);
+    display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
+    color:var(--rh-green-darker);background:var(--rh-green-100);
     padding:3px 8px;border-radius:20px;margin-top:6px;
   }
 
-  /* ===== EMPTY STATE ===== */
+  /* ===== EMPTY STATE (sidebar) ===== */
   .rh-empty{
     flex:1;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    text-align:center;padding:40px;
+    align-items:center;justify-content:center;text-align:center;padding:40px 28px;
   }
   .rh-empty-icon{
-    width:110px;height:110px;border-radius:50%;
-    background:var(--rh-green-50);display:grid;
-    place-items:center;margin-bottom:22px;
+    width:96px;height:96px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #fff, var(--rh-green-50));
+    display:grid;place-items:center;margin-bottom:20px;
+    box-shadow:inset 0 0 0 1px var(--rh-green-soft), 0 10px 30px rgba(20,168,0,.15);
   }
-  .rh-empty-icon i{font-size:44px;color:var(--rh-green);opacity:.8;}
-  .rh-empty h2{font-size:20px;font-weight:800;color:var(--rh-ink);margin-bottom:8px;}
-  .rh-empty p{font-size:14.5px;color:var(--rh-muted);max-width:340px;line-height:1.6;margin-bottom:24px;}
+  .rh-empty-icon i{font-size:38px;color:var(--rh-green);}
+  .rh-empty h3{font-size:17px;font-weight:800;color:var(--rh-ink);margin-bottom:8px;}
+  .rh-empty p{font-size:13.5px;color:var(--rh-muted);line-height:1.6;margin-bottom:20px;}
   .rh-empty-btn{
     display:inline-flex;align-items:center;gap:8px;
     background:var(--rh-green);color:#fff;text-decoration:none;
-    padding:12px 24px;border-radius:12px;font-size:14px;font-weight:700;transition:.2s;
+    padding:11px 22px;border-radius:11px;font-size:13.5px;font-weight:700;
+    transition:.2s;box-shadow:0 6px 16px rgba(20,168,0,.30);
   }
-  .rh-empty-btn:hover{
-    background:var(--rh-green-dark);
-    transform:translateY(-1px);
-    box-shadow:0 8px 24px rgba(20,168,0,.25);
-  }
+  .rh-empty-btn:hover{background:var(--rh-green-dark);transform:translateY(-1px);
+    box-shadow:0 10px 24px rgba(20,168,0,.35);}
 
   /* ===== MAIN PREVIEW ===== */
   .rh-main{
-    background:var(--rh-bg-soft);
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    text-align:center;padding:40px;
+    background:
+      radial-gradient(800px 400px at 50% 0%, rgba(20,168,0,.06), transparent 60%),
+      linear-gradient(180deg,#fbfdfa,#f3f9f1);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:48px 40px;position:relative;overflow:hidden;
   }
+  .rh-main::before{
+    content:"";position:absolute;inset:0;
+    background-image:radial-gradient(circle at 2px 2px, rgba(0,30,0,.04) 1px, transparent 0);
+    background-size:28px 28px;
+    mask-image:radial-gradient(ellipse at center, #000 30%, transparent 70%);
+    pointer-events:none;
+  }
+  .rh-main > *{position:relative;}
   .rh-main-illus{
-    width:200px;height:200px;margin-bottom:24px;
-    background:linear-gradient(135deg,var(--rh-green-50),#e8f5e8);
+    width:200px;height:200px;margin-bottom:28px;
     border-radius:50%;display:grid;place-items:center;
-    position:relative;
+    background:radial-gradient(circle at 30% 30%, #ffffff, var(--rh-green-50) 60%, #e3f3e0);
+    box-shadow:
+      inset 0 0 0 1px var(--rh-green-soft),
+      0 30px 60px rgba(20,168,0,.15),
+      0 8px 24px rgba(0,30,0,.06);
+    position:relative;animation:rh-float 6s ease-in-out infinite;
   }
-  .rh-main-illus i{
-    font-size:64px;color:var(--rh-green);opacity:.4;
+  .rh-main-illus i{font-size:68px;color:var(--rh-green);filter:drop-shadow(0 6px 12px rgba(20,168,0,.25));}
+  .rh-main-illus::after{
+    content:"";position:absolute;inset:-14px;border-radius:50%;
+    border:1.5px dashed rgba(20,168,0,.25);animation:rh-spin 30s linear infinite;
   }
-  .rh-main-illus::before{
-    content:"";position:absolute;width:140px;height:140px;
-    border-radius:50%;background:linear-gradient(135deg,#fff,var(--rh-green-50));
-    opacity:.7;
+  @keyframes rh-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @keyframes rh-spin{to{transform:rotate(360deg)}}
+
+  .rh-main h2{font-size:24px;font-weight:800;color:var(--rh-ink);margin-bottom:10px;letter-spacing:-.02em;}
+  .rh-main p{font-size:14.5px;color:var(--rh-muted);max-width:380px;line-height:1.65;}
+  .rh-main-features{
+    display:flex;gap:10px;margin-top:24px;flex-wrap:wrap;justify-content:center;
   }
-  .rh-main h2{
-    font-size:22px;font-weight:800;color:var(--rh-ink);margin-bottom:10px;
+  .rh-feature{
+    display:inline-flex;align-items:center;gap:7px;
+    background:#fff;border:1px solid var(--rh-line);
+    padding:8px 14px;border-radius:20px;font-size:12.5px;font-weight:600;color:var(--rh-text);
+    box-shadow:var(--rh-shadow-sm);
   }
-  .rh-main p{
-    font-size:14.5px;color:var(--rh-muted);max-width:360px;line-height:1.65;
-  }
+  .rh-feature i{color:var(--rh-green);font-size:11px;}
 
   /* ===== RESPONSIVE ===== */
   @media (max-width:900px){
-    .rh-msg-layout{
-      margin:0;border-radius:0;
-      grid-template-columns:1fr;
-    }
-    .rh-main{display:none;}
+    .rh-wrap{padding:20px 16px 28px;}
+    .rh-msg-layout{grid-template-columns:1fr;min-height:calc(100vh - 200px);}
     .rh-sidebar{border-right:none;}
+    .rh-main{display:none;}
+    .rh-page-title{font-size:24px;}
   }
   @media (max-width:480px){
-    .rh-sidebar-head{padding:16px 14px 10px;}
-    .rh-sidebar-head h1{font-size:18px;}
-    .rh-search-box{margin:0 14px 10px;}
-    .rh-conv-list{padding:0 8px 12px;}
-    .rh-conv-item{padding:10px 8px;gap:10px;}
-    .rh-conv-avatar{width:40px;height:40px;font-size:14px;}
-    .rh-conv-name{font-size:13px;}
-    .rh-conv-msg{font-size:12px;}
+    .rh-nav-inner{padding:0 16px;height:56px;}
+    .rh-wrap{padding:16px 12px 24px;}
+    .rh-msg-layout{border-radius:18px;}
+    .rh-sidebar-head{padding:18px 16px 10px;}
+    .rh-filters{padding:0 16px 10px;}
+    .rh-search-box{margin:0 16px 10px;}
+    .rh-conv-list{padding:2px 10px 12px;}
+    .rh-conv-item{padding:11px 10px;gap:11px;}
+    .rh-conv-avatar{width:44px;height:44px;font-size:15px;border-radius:12px;}
+    .rh-conv-name{font-size:13.5px;}
+    .rh-conv-msg{font-size:12.5px;}
+    .rh-stat{padding:8px 12px;}
+    .rh-stat b{font-size:14px;}
   }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="rh-msg-layout">
-  <!-- Sidebar -->
-  <aside class="rh-sidebar">
-    <div class="rh-sidebar-head">
-      <h1>Messages</h1>
-      <p>Your conversations with employers</p>
+<nav class="rh-nav">
+  <div class="rh-nav-inner">
+    <a href="/" class="rh-nav-brand">
+      <i class="fas fa-globe-americas"></i>
+      RemoteHub
+    </a>
+    <div class="rh-nav-links">
+      <a href="{{ url_for('jobs.browse') }}"><i class="fas fa-briefcase"></i> Jobs</a>
+      <a href="#"><i class="fas fa-bell"></i></a>
+      <div class="rh-nav-avatar">{{ current_user.username[:1].upper() if current_user else 'U' }}</div>
     </div>
+  </div>
+</nav>
 
-    <div class="rh-search-box">
-      <i class="fas fa-search"></i>
-      <input type="text" placeholder="Search messages..." id="msgSearch">
+<div class="rh-wrap">
+  <!-- Page Header -->
+  <div class="rh-page-head">
+    <div>
+      <div class="rh-page-title"><span class="dot"></span> Messages</div>
+      <div class="rh-page-sub">Stay in touch with employers and respond fast to win more jobs</div>
     </div>
-
-    {% if conversations %}
-    <div class="rh-conv-list">
-      {% for conv in conversations %}
-      {% set name = (conv.admin.full_name if conv.admin else 'Support') %}
-      {% set initial = name[:1] %}
-      {% set is_unread = conv.unread|default(false) %}
-      {% set avatar_colors = ['#14a800','#108a00','#0d6b00','#1a7a2e','#0f7a3a','#0d6e35'] %}
-      {% set color = avatar_colors[loop.index0 % avatar_colors|length] %}
-
-      <a href="{{ url_for('chat.view_conversation', conv_id=conv.id) }}" class="rh-conv-item {{ 'active' if loop.first }}">
-        <div class="rh-conv-avatar" style="background:linear-gradient(135deg,{{ color }},{{ color }}dd);">
-          {{ initial }}
-        </div>
-        <div class="rh-conv-body">
-          <div class="rh-conv-row">
-            <span class="rh-conv-name">{{ name }}</span>
-            <span class="rh-conv-time">{{ conv._last_time }}</span>
-          </div>
-          <div class="rh-conv-row2">
-            <span class="rh-conv-msg">{{ conv._last_msg or 'No messages yet' }}</span>
-            {% if is_unread %}<span class="rh-conv-badge">{{ conv.unread_count|default(1) }}</span>{% endif %}
-          </div>
-          {% if conv.job %}
-          <span class="rh-conv-tag"><i class="fas fa-briefcase" style="font-size:10px;"></i> {{ conv.job.title|truncate(28) }}</span>
-          {% endif %}
-        </div>
-      </a>
-      {% endfor %}
+    <div class="rh-stats">
+      <div class="rh-stat"><i class="fas fa-inbox"></i><div><b>{{ conversations|length if conversations else 0 }}</b><span>Conversations</span></div></div>
+      <div class="rh-stat"><i class="fas fa-bolt"></i><div><b>&lt;1h</b><span>Avg. response</span></div></div>
+      <div class="rh-stat"><i class="fas fa-check-circle"></i><div><b>Active</b><span>Now online</span></div></div>
     </div>
-    {% else %}
-    <div class="rh-empty" style="padding-top:60px;">
-      <div class="rh-empty-icon">
-        <i class="fas fa-comment-dots"></i>
+  </div>
+
+  <!-- Messenger Layout -->
+  <div class="rh-msg-layout">
+    <!-- Sidebar -->
+    <aside class="rh-sidebar">
+      <div class="rh-sidebar-head">
+        <h2>Inbox {% if conversations %}<span class="pill">{{ conversations|length }}</span>{% endif %}</h2>
+        <p>All your client conversations in one place</p>
       </div>
-      <h2>No conversations yet</h2>
-      <p>Apply to a job and start chatting directly with hiring managers and recruiters.</p>
-      <a href="{{ url_for('jobs.browse') }}" class="rh-empty-btn">
-        <i class="fas fa-search"></i> Browse Jobs
-      </a>
-    </div>
-    {% endif %}
-  </aside>
 
-  <!-- Main preview area -->
-  <main class="rh-main">
-    <div class="rh-main-illus">
-      <i class="fas fa-paper-plane"></i>
-    </div>
-    <h2>Select a conversation</h2>
-    <p>Choose a chat from the sidebar to view messages and connect with employers in real time.</p>
-  </main>
+      <div class="rh-filters">
+        <span class="rh-filter active">All</span>
+        <span class="rh-filter">Unread</span>
+        <span class="rh-filter">Active jobs</span>
+        <span class="rh-filter">Archived</span>
+      </div>
+
+      <div class="rh-search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search messages, people, jobs..." id="msgSearch">
+      </div>
+
+      {% if conversations %}
+      <div class="rh-conv-list">
+        {% for conv in conversations %}
+        {% set name = (conv.admin.full_name if conv.admin else 'Support') %}
+        {% set initial = name[:1] %}
+        {% set is_unread = conv.unread|default(false) %}
+        {% set avatar_colors = ['#14a800','#108a00','#0d6b00','#1a7a2e','#0f7a3a','#0d6e35'] %}
+        {% set color = avatar_colors[loop.index0 % avatar_colors|length] %}
+
+        <a href="{{ url_for('chat.view_conversation', conv_id=conv.id) }}" class="rh-conv-item {{ 'active' if loop.first }}">
+          <div class="rh-conv-avatar" style="background:linear-gradient(135deg,{{ color }},{{ color }}cc);">
+            {{ initial }}
+          </div>
+          <div class="rh-conv-body">
+            <div class="rh-conv-row">
+              <span class="rh-conv-name">{{ name }}</span>
+              <span class="rh-conv-time">{{ conv._last_time }}</span>
+            </div>
+            <div class="rh-conv-row2">
+              <span class="rh-conv-msg">{{ conv._last_msg or 'No messages yet' }}</span>
+              {% if is_unread %}<span class="rh-conv-badge">{{ conv.unread_count|default(1) }}</span>{% endif %}
+            </div>
+            {% if conv.job %}
+            <span class="rh-conv-tag"><i class="fas fa-briefcase" style="font-size:10px;"></i> {{ conv.job.title|truncate(28) }}</span>
+            {% endif %}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="rh-empty">
+        <div class="rh-empty-icon"><i class="fas fa-comment-dots"></i></div>
+        <h3>No conversations yet</h3>
+        <p>Apply to a job and start chatting directly with hiring managers and recruiters.</p>
+        <a href="{{ url_for('jobs.browse') }}" class="rh-empty-btn">
+          <i class="fas fa-search"></i> Browse Jobs
+        </a>
+      </div>
+      {% endif %}
+    </aside>
+
+    <!-- Main preview area -->
+    <main class="rh-main">
+      <div class="rh-main-illus">
+        <i class="fas fa-paper-plane"></i>
+      </div>
+      <h2>Select a conversation</h2>
+      <p>Choose a chat from the sidebar to view messages and connect with employers in real time.</p>
+      <div class="rh-main-features">
+        <span class="rh-feature"><i class="fas fa-shield-alt"></i> End-to-end secured</span>
+        <span class="rh-feature"><i class="fas fa-bolt"></i> Real-time delivery</span>
+        <span class="rh-feature"><i class="fas fa-file-alt"></i> Share files & offers</span>
+      </div>
+    </main>
+  </div>
 </div>
 
 <script>
   (function(){
     const search = document.getElementById('msgSearch');
-    if(!search) return;
-    search.addEventListener('input', function(){
-      const q = this.value.toLowerCase();
-      document.querySelectorAll('.rh-conv-item').forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(q) ? '' : 'none';
+    if(search){
+      search.addEventListener('input', function(){
+        const q = this.value.toLowerCase();
+        document.querySelectorAll('.rh-conv-item').forEach(item => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(q) ? '' : 'none';
+        });
+      });
+    }
+    document.querySelectorAll('.rh-filter').forEach(f => {
+      f.addEventListener('click', function(){
+        document.querySelectorAll('.rh-filter').forEach(x => x.classList.remove('active'));
+        this.classList.add('active');
       });
     });
   })();
